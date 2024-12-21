@@ -1,0 +1,54 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=2cm]{geometry}
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage{subcaption}
+\usepackage{float,graphicx}
+\usepackage{hyperref}
+\usepackage{enumerate}
+\usepackage[margins,movemargins]{trackchanges}
+
+\hypersetup{
+  colorlinks   = true, %Colours links instead of ugly boxes
+  urlcolor     = blue, %Colour for external hyperlinks
+  linkcolor    = blue, %Colour of internal links
+  citecolor   = red %Colour of citations
+}
+
+\newsavebox{\imagebox}
+
+\addeditor{gh}
+
+% Bibliography
+\usepackage[
+backend=biber,
+style=apa,
+% maxbibnames=10,
+maxcitenames=1,
+% natbib=true,
+% giveninits=true,
+]{biblatex}
+\addbibresource{ohbemn.bib}
+
+\title{Oh Bemn!}
+\author{Gaute Hope}
+\date{2024}
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+
+\textcite{kirkup1998BoundaryElementMethod}
+
+\section{Boundary conditions}
+
+\clearpage
+\printbibliography
+
+% \appendix
+% \section{}
+% \label{app:app1}
+
+
+\end{document}

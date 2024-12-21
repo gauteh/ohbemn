@@ -1,0 +1,15 @@
+*.pdf
+*.log
+*.aux
+*.fls
+*.fdb_latexmk
+*.synctex*
+*.bbl
+*.blg
+*.bcf
+*.run.xml
+*.tdo
+*.out
+jtech
+dist
+agu
