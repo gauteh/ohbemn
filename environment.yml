@@ -1,0 +1,15 @@
+name: ohbemn
+channels:
+  - conda-forge
+dependencies:
+  - xarray
+  - numpy
+  - scipy
+  - netcdf4
+  - coloredlogs
+  - pytest
+  - pytest-benchmark
+  - matplotlib
+  - cartopy
+  - pyproj
+  - maturin

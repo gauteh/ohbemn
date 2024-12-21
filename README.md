@@ -1,4 +1,4 @@
-# Ocean Boundary Element Method (OBEM)
+# Oh Bemn! Ocean Boundary Element Method (OBEM)
 
 ## Inspiration
 
