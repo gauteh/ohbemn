@@ -37,11 +37,37 @@ maxcitenames=1,
 \begin{document}
 \maketitle
 
-\section{Introduction}
+\section{Ocean waves}
 
+Small wave approximation, $\Phi$ is the velocity potential:
+
+\begin{eqnarray}
+  u = \frac{\partial \phi}{\partial x} \\
+  w = \frac{\partial \phi}{\partial y}
+\end{eqnarray}
+
+where $u$ and $w$ is the water particle velocity in $x$ and $y$ direction.
+
+At the surface:
+
+\begin{equation}
+  \frac{\partial \phi}{\partial t} + g \eta = 0; z = 0
+\end{equation}
+
+\textcite{holthuijsen2010WavesOceanicCoastal} Eq. 5.3.29.
+
+
+\subsection{Boundary conditions}
+
+At the seabed the vertical velocity is $0$:
+
+\begin{equation}
+  \frac{\partial \phi}{\partial z} = 0; z = -d
+\end{equation}
+
+
+\section{Boundary Element Method}
 \textcite{kirkup1998BoundaryElementMethod}
-
-\section{Boundary conditions}
 
 \clearpage
 \printbibliography
