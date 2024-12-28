@@ -2,18 +2,20 @@ import numpy as np
 
 def eta(phi, k, c):
     """
-    Calculate eta from phi:
+    Calculate surface elevation (eta) from the velocity potential (phi):
 
-    $
-    \frac{\partial phi}{\partial t} = -g \eta
-    $
+    From the dynamic boundary condition:
 
-    From the dynamic boundary condition.
+    .. math::
 
-    $\phi$ is the complex amplitude of the vector potential of a harmonic wave. The time component is:
+        \frac{\partial phi}{\partial t} = -g \eta
 
-    $\exp(iwt)$
+    :math:`\phi` is the complex amplitude of the vector potential of a harmonic wave. The time component is:
 
-    which is straightforward to differentiate (since the rest is constant in time).
+    .. math::
+
+        \exp(i \omega t)
+
+    which is straightforward to differentiate (since :math:`\phi` is otherwise constant in time).
     """
     raise NotImplemented

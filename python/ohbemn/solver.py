@@ -1,2 +1,3 @@
-def compute_boundary_matrices(k, mu, orientation):
+def compute_boundary_matrices(boundary, k, mu, orientation):
+    pass
 
