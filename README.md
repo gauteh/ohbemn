@@ -1,5 +1,7 @@
 # Oh Bemn! Ocean Boundary Element Method (OBEM)
 
+<img src="damn.gif" alt="damn! (star trek, picard)"/>
+
 ## Inspiration
 
 * https://github.com/fjargsto/abem

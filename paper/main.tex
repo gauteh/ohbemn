@@ -42,13 +42,26 @@ maxcitenames=1,
 Small wave approximation, $\Phi$ is the velocity potential:
 
 \begin{eqnarray}
+  \mathbf{u} = \nabla \phi \\
   u = \frac{\partial \phi}{\partial x} \\
   w = \frac{\partial \phi}{\partial y}
 \end{eqnarray}
 
 where $u$ and $w$ is the water particle velocity in $x$ and $y$ direction.
 
-At the surface:
+The flow is irrotational:
+
+\begin{equation}
+  \nabla \times \phi = 0
+\end{equation}
+
+And incompressible:
+
+\begin{equation}
+  \nabla \cdot \phi = 0
+\end{equation}
+
+At the surface, the pressure is equal to the atmospheric pressure:
 
 \begin{equation}
   \frac{\partial \phi}{\partial t} + g \eta = 0; z = 0
@@ -56,6 +69,15 @@ At the surface:
 
 \textcite{holthuijsen2010WavesOceanicCoastal} Eq. 5.3.29.
 
+Solution to plane wave traveling along $x$:
+
+\begin{equation}
+  \eta(x,y,t) = a \sin{(\omega t - kx)}
+\end{equation}
+
+\begin{equation}
+  \hat\phi(x, y, z, t) = \frac{ag}{\omega} \frac{\cosh{(k(z+h))}}{\cosh{(kh)}}
+\end{equation}
 
 \subsection{Boundary conditions}
 
@@ -64,6 +86,18 @@ At the seabed the vertical velocity is $0$:
 \begin{equation}
   \frac{\partial \phi}{\partial z} = 0; z = -d
 \end{equation}
+
+Across the boundary the velocity must be continuous:
+
+\begin{equation}
+  \mathbf{u_0}(\Omega) \cdot \mathbf{n} = \mathbf{u_1}(\Omega) \cdot \mathbf{n}
+\end{equation}
+
+\begin{equation}
+  \frac{\partial \phi}{\partial \mathbf{n}} = 0
+\end{equation}
+
+Which is a \emph{Neumann boundary condition}: specifying the value of the \emph{derivative} of $\phi$ on the boundary.
 
 
 \section{Boundary Element Method}
