@@ -39,7 +39,7 @@ maxcitenames=1,
 
 \section{Ocean waves}
 
-Small wave approximation, $\Phi$ is the velocity potential:
+Small wave approximation, $\phi$ is the velocity potential:
 
 \begin{eqnarray}
   \mathbf{u} = \nabla \phi \\
@@ -61,6 +61,16 @@ And incompressible:
   \nabla \cdot \phi = 0
 \end{equation}
 
+The wave equation is therefore:
+
+\begin{equation}
+  \nabla^2 \phi = 0 \label{eq:wave-eq-laplace}
+\end{equation}
+
+\subsection{Boundary conditions}
+
+\subsubsection{Kinematic boundary conditions}
+
 At the surface, the pressure is equal to the atmospheric pressure:
 
 \begin{equation}
@@ -68,6 +78,47 @@ At the surface, the pressure is equal to the atmospheric pressure:
 \end{equation}
 
 \textcite{holthuijsen2010WavesOceanicCoastal} Eq. 5.3.29.
+
+Relating the surface to the velocity potential, linear approximation:
+
+\begin{equation}
+  \frac{\partial \eta}{\partial t} = \frac{\partial \phi}{\partial z} \bigg\rvert_{z=\eta}
+\end{equation}
+
+This is defined at the varying surface, using Taylor-expansion and disregarding the quadratic terms:
+
+\begin{equation}
+\frac{\partial \eta}{\partial t} = \frac{\partial \phi}{\partial z} \bigg\rvert_{z=0} \label{eq:surface-kinematic-bc}
+\end{equation}
+
+% https://falk.ucsd.edu/pdf/WavesLecture02_211A.pdf
+
+Equation \eqref{eq:surface-kinematic-bc} is the surface kinematic boundary condition.
+
+At the seabed the vertical velocity is $0$:
+
+\begin{equation}
+  \frac{\partial \phi}{\partial z} = 0; z = -d
+\end{equation}
+
+\subsubsection{Dynamic boundary condition}
+
+\begin{equation}
+  \frac{\partial \phi}{\partial t} = -g \eta \bigg\rvert_{z=0}
+\end{equation}
+
+
+\subsubsection{Summary}
+
+% https://falk.ucsd.edu/pdf/WavesLecture02_211A.pdf
+
+\section{Solution to the linear wave equation}
+
+A plane wave:
+
+\begin{equation}
+  \phi = A \exp{(i\mathbf{k \cdot x})}
+\end{equation}
 
 Solution to plane wave traveling along $x$:
 
@@ -79,13 +130,49 @@ Solution to plane wave traveling along $x$:
   \hat\phi(x, y, z, t) = \frac{ag}{\omega} \frac{\cosh{(k(z+h))}}{\cosh{(kh)}}
 \end{equation}
 
-\subsection{Boundary conditions}
-
-At the seabed the vertical velocity is $0$:
+\subsection{Dispersion relation}
 
 \begin{equation}
-  \frac{\partial \phi}{\partial z} = 0; z = -d
+  w^2 = gk \tanh{(kh)}
 \end{equation}
+
+\section{Boundary Element Method}
+
+The Laplace equation, \eqref{eq:wave-eq-laplace}, is transformed to the integral equation by applying Green's second theorem:
+
+\begin{equation}
+  \int_S \frac{\partial G}{\partial n_q}(\mathbf{p}, \mathbf{q}) \phi(\mathbf{q}) d S_q + \frac{1}{2} \phi(q) = \int_S G(\mathbf{p}, \mathbf{q}) \frac{\partial \phi}{\partial n_q} dS_q \label{eq:integral-equation}
+\end{equation}
+
+Typically we are given on the boundary the values for either $\phi(\mathbf{x})$
+(Dirichlet) or $\frac{\partial \phi}{\partial n_q}$ (Neumann) on the boundary \parencite{kirkup1998BoundaryElementMethod}.
+
+\subsection{Operator notation}
+
+$\xi$ is a function on the boundary $S$, with $\mathbf{p}$ being all points on $S$:
+
+\begin{equation}
+  \int_S G(\mathbf{p}, \mathbf{q}) \xi(q) dS_q = v(\mathbf{p})
+\end{equation}
+
+then the $L$ operator is:
+
+\begin{equation}
+  \{L \xi \}_S (\mathbf{p}) = v(\mathbf{p})
+\end{equation}
+
+% TODO: add M operator.
+
+The integral equation, \eqref{eq:integral-equation}, linearised and in operator notation is:
+
+\begin{equation}
+  M \hat\phi + \frac{1}{2} \hat\phi = L \hat v \label{eq:integral-operator-form}
+\end{equation}
+
+Where $\hat \phi$ and $\hat v$ are approximations to $\phi(\mathbf{x})$
+and $\frac{\partial \phi}{\partial n_q}$ respectively at a set of points on the boundary $S$.
+
+\subsection{Boundary condition across elements}
 
 Across the boundary the velocity must be continuous:
 
@@ -99,9 +186,20 @@ Across the boundary the velocity must be continuous:
 
 Which is a \emph{Neumann boundary condition}: specifying the value of the \emph{derivative} of $\phi$ on the boundary.
 
+\subsection{Domain solution}
 
-\section{Boundary Element Method}
-\textcite{kirkup1998BoundaryElementMethod}
+\begin{equation}
+  \phi(\mathbf{x}) = \{L \phi\}_S - \{M v\}_S \quad \mathbf{x} \in D
+\end{equation}
+
+\subsection{Colocation}
+
+The colocation method approximates the boundary function by a constant at each segment:
+
+\begin{eqnarray}
+  \phi(\mathbf{p}) \approx \phi_j \\
+  v(\mathbf{p}) \approx v_j
+\end{eqnarray}
 
 \clearpage
 \printbibliography

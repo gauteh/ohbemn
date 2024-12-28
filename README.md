@@ -1,4 +1,4 @@
-# Oh Bemn! Ocean Boundary Element Method (OBEM)
+# Oh Bemn! Ocean Boundary Element Method
 
 <img src="damn.gif" alt="damn! (star trek, picard)"/>
 
