@@ -6,3 +6,5 @@ def test_square():
     v, e = Square()
     r = Region(v, e)
     print(r)
+
+    print(r.len())

@@ -13,3 +13,5 @@ dependencies:
   - cartopy
   - pyproj
   - maturin
+  - jupyter
+  - ipython

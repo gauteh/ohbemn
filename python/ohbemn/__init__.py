@@ -6,3 +6,5 @@ if hasattr(ohbemn, "__all__"):
     __all__ = ohbemn.__all__
 
 from . import geometry
+from . import wave
+from .boundary import Region
