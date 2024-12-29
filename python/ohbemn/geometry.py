@@ -11,15 +11,6 @@ def norm2d(a, b):
     return np.array([diff[1] / L, -diff[0] / L])
 
 
-class Boundary:
-    vertices: np.ndarray
-    edges: np.ndarray
-
-    def __init__(self, vertices, edges):
-        self.vertices = vertices
-        self.edges = edges
-
-
 def Square():
     aVertex = np.array(
         [[0.00, 0.0000], [0.00, 0.0125], [0.00, 0.0250], [0.00, 0.0375],
