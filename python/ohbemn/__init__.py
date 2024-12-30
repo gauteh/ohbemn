@@ -8,3 +8,4 @@ if hasattr(ohbemn, "__all__"):
 from . import geometry
 from . import wave
 from .boundary import Region
+from .solver import HelmholtzSolver

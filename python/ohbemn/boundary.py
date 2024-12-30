@@ -6,11 +6,13 @@ from . import geometry
 class Region:
     vertices: np.ndarray
     _edges: np.ndarray
+    _centers: np.ndarray
     named_partition: dict
 
     def __init__(self, vertices, edges):
         self.vertices = vertices
         self._edges = edges
+        self._centers = None
         self.named_partition = {}
 
     def __repr__(self):
@@ -108,6 +110,12 @@ class Region:
         bc.f.fill(0.0)
         return bc
 
+    def incident_field(self):
+        """
+        Template for incident field.
+        """
+        return BoundaryIncidence(self.len())
+
 
 class BoundaryCondition:
 
@@ -122,3 +130,10 @@ class BoundaryCondition:
         result += "beta = {}, ".format(self.beta)
         result += "f = {})".format(self.f)
         return result
+
+
+class BoundaryIncidence:
+    def __init__(self, size):
+        self.phi = np.zeros(size, dtype=np.complex64)
+        self.v = np.zeros(size, dtype=np.complex64)
+

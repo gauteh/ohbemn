@@ -1,6 +1,6 @@
 import numpy as np
 
-from boundary import BoundaryCondition
+from .boundary import BoundaryCondition
 
 
 class HelmholtzSolver:
