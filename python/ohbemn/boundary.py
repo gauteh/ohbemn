@@ -192,9 +192,14 @@ class BoundarySolution:
 
 
 class SampleSolution:
+
     def __init__(self, boundary_solution, phis):
         self.boundarySolution = boundary_solution
         self.phis = phis
+
+    def eta(self):
+        return wave.eta(self.phis, self.boundarySolution.k,
+                        self.boundarySolution.c)
 
     def __repr__(self):
         result = "SampleSolution("
@@ -207,8 +212,10 @@ class SampleSolution:
         for i in range(self.phis.size):
             eta = wave.eta(self.boundarySolution.k,
                            self.phis[i],
-                           c=self.boundarySolution.parent.c)
-            result += "{:5d}  {: 1.4e}{:+1.4e}i  {: 1.4e}{:+1.4e}i\n".format( \
-                i+1, self.phis[i].real, self.phis[i].imag, eta.real, eta.imag, )
+                           c=self.boundarySolution.c)
+
+            result += f"{i+1} {self.phis[i]} {eta}\n"
+            # result += "{:5d}  {: 1.4e}{:+1.4e}i  {: 1.4e}{:+1.4e}i\n".format( \
+            #     i+1, self.phis[i].real, self.phis[i].imag, eta.real, eta.imag, )
 
         return result
