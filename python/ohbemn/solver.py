@@ -3,7 +3,7 @@ import numpy as np
 from boundary import BoundaryCondition
 
 
-class LaplaceSolver:
+class HelmholtzSolver:
 
     def __init__(self, region):
         self.region = region
