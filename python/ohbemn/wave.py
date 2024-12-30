@@ -17,7 +17,7 @@ def eta(phi, k, c):
 
     .. math::
 
-        \exp(i \omega t)
+        \exp(-i \omega t)
 
     which is straightforward to differentiate (since :math:`\phi` is otherwise constant in time).
     """
