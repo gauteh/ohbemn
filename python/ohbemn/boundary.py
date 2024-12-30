@@ -112,7 +112,7 @@ class Region:
         bc.f.fill(0.0)
         return bc
 
-    def incident_field(self):
+    def boundary_incidence(self):
         """
         Template for incident field.
         """

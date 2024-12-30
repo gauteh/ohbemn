@@ -13,3 +13,7 @@ def test_pool():
     r.plot(ax)
 
     print("segments:", r.len())
+
+def test_acousticbem():
+    # https://github.com/lzhw1991/AcousticBEM/blob/master/Jupyter/Rectangular%20Interior%20Helmholtz%20Problems.ipynb
+    pass
