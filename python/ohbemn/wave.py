@@ -1,8 +1,9 @@
 import numpy as np
 
-g =  9.80665 # [m/s^2] standard gravity
+g = 9.80665  # [m/s^2] standard gravity
 
-def eta(phi, k, c):
+
+def eta(phi, k, c, t=0.0):
     """
     Calculate surface elevation (eta) from the velocity potential (phi):
 
@@ -20,14 +21,16 @@ def eta(phi, k, c):
 
     which is straightforward to differentiate (since :math:`\phi` is otherwise constant in time).
     """
-    raise NotImplemented
+    w = k * c
+    return (1j * -1 / g * w * np.exp(-1.0j * w * t) * phi)
+
 
 def wavec_interm(T, h, g=g, N=200, prt=False):
     """
     Phase speed (iterative, N, from jan-victor)
     """
     T = np.atleast_1d(T)
-    assert np.all(h>0)
+    assert np.all(h > 0)
     w = 2 * np.pi / T
     kd = (2 * np.pi)**2 / g / T**2
     k = kd
@@ -43,9 +46,10 @@ def wavec_interm(T, h, g=g, N=200, prt=False):
     cg = c * n
     return c, cg, k
 
+
 def wavec_deep(T, g=9.82):
-    cp = g/(2*np.pi) * T
-    k = cp*T
-    cg = cp/2
+    cp = g / (2 * np.pi) * T
+    k = cp * T
+    cg = cp / 2
 
     return cp, cg, k

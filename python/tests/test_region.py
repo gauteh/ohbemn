@@ -1,9 +1,9 @@
 import ohbemn
 from ohbemn.boundary import Region
-from ohbemn.geometry import Square
+from ohbemn.geometry import square
 
 def test_square():
-    v, e = Square()
+    v, e = square()
     r = Region(v, e)
     print(r)
 
