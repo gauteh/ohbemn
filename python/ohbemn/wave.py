@@ -4,7 +4,7 @@ g = 9.80665  # [m/s^2] standard gravity
 
 
 def eta(phi, k, c):
-    """
+    r"""
     Calculate surface elevation (eta) from the velocity potential (phi):
 
     From the dynamic boundary condition:

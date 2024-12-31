@@ -96,6 +96,41 @@ class Region:
         v, e = geometry.square(w)
         return Region(v, e)
 
+    @classmethod
+    def rectangle(cls, width, height, elements_x, elements_y):
+        nBoudnaryElements = 2 * (elements_x + elements_y)
+        # boundary elements are edges
+        aEdge = np.empty((nBoudnaryElements, 2), dtype=np.int32)
+        aEdge[:, 0] = range(nBoudnaryElements)
+        aEdge[:-1, 1] = range(1, nBoudnaryElements)
+        aEdge[-1, 1] = 0
+
+        aVertex = np.empty((nBoudnaryElements, 2), dtype=np.float32)
+        # up the y-Axis
+        aVertex[0:elements_y, 0] = 0.0
+        aVertex[0:elements_y, 1] = np.linspace(0.0, height, elements_y, False)
+        # over to the right along top edge
+        aVertex[elements_y:elements_y + elements_x,
+                0] = np.linspace(0.0, width, elements_x, False)
+        aVertex[elements_y:elements_y + elements_x, 1] = height
+        # back down to x-axis
+        aVertex[elements_y + elements_x:2 * elements_y + elements_x, 0] = width
+        aVertex[elements_y + elements_x:2 * elements_y + elements_x,
+                1] = np.linspace(height, 0.0, elements_y, False)
+        # going left back to origin
+        aVertex[2 * elements_y + elements_x:2 * (elements_y + elements_x),
+                0] = np.linspace(width, 0.0, elements_x, False)
+        aVertex[2 * elements_y + elements_x:2 * (elements_y + elements_x),
+                1] = 0.0
+
+        return Region(aVertex, aEdge)
+
+    def boundary_condition(self):
+        """
+        Unspecified boundary conditions for this region.
+        """
+        return BoundaryCondition(self.len())
+
     def dirichlet_boundary_condition(self):
         """Returns a boundary condition with alpha the 1-function and f and beta 0-functions."""
         bc = BoundaryCondition(self.len())
