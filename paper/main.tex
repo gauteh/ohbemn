@@ -118,9 +118,31 @@ At the seabed the vertical velocity is $0$:
 \end{equation}
 
 
-\subsubsection{Summary}
+% \subsubsection{Summary}
 
 % https://falk.ucsd.edu/pdf/WavesLecture02_211A.pdf
+
+\subsection{Boundary Conditions between interior and exterior}
+
+\subsubsection{Water-water with different depth}
+
+The wave speed changes according to the dispersion relation
+(\eqref{eq:dispersion}). The velocity across the boundary must be
+continuous:
+
+\begin{equation}
+  \frac{\partial \phi_1}{\partial n} = \frac{\partial \phi_2}{\partial n}
+\end{equation}
+
+Otherwise the amplitude ($\propto \phi$) is free to change.
+
+\subsubsection{Water-solid}
+
+E.g. a break-water. The particle velocity across the boundary (at the boundary) is zero:
+
+\begin{equation}
+\frac{\partial \phi}{\partial n} = 0 \bigg\rvert_{x \in S}
+\end{equation}
 
 \section{Solution to the linear wave equation}
 
@@ -143,7 +165,7 @@ Solution to plane wave traveling along $x$:
 \subsection{Dispersion relation}
 
 \begin{equation}
-  w^2 = gk \tanh{(kh)}
+  w^2 = gk \tanh{(kh)} \label{eq:dispersion}
 \end{equation}
 
 \section{Boundary Element Method}
