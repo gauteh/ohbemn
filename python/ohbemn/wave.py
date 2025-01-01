@@ -22,7 +22,17 @@ def eta(phi, k, c):
     which is straightforward to differentiate (since :math:`\phi` is otherwise constant in time).
     """
     w = k * c
-    return (1j * -1 / g * w * phi)
+    return (-1j / g * w * phi)
+
+
+def phi(eta, k, c):
+    """
+    Calculate the velocity potential from wave height (eta). See :ref:`eta` for
+    more.
+    """
+    w = k * c
+
+    return -g / (1j * w) * eta
 
 
 def wavelength(c, f):
