@@ -1,7 +1,7 @@
 import numpy as np
 
-from .boundary import BoundaryCondition, BoundarySolution
 from .intop import l_2d, m_2d, mt_2d, n_2d
+from . import wave
 
 
 class Solver:
@@ -49,22 +49,6 @@ class Solver:
         result = self.__class__.__name__ + "("
         result += "  Region = " + repr(self.region) + ")"
         return result
-
-    def dirichlet_boundary_condition(self):
-        """Returns a boundary condition with alpha the 1-function and f and beta 0-functions."""
-        bc = BoundaryCondition(self.len())
-        bc.alpha.fill(1.0)
-        bc.beta.fill(0.0)
-        bc.f.fill(1.0)
-        return bc
-
-    def neumann_boundary_condition(self):
-        """Returns a boundary condition with f and alpha 0-functions and beta the 1-function."""
-        bc = BoundaryCondition(self.len())
-        bc.alpha.fill(0.0)
-        bc.beta.fill(1.0)
-        bc.f.fill(0.0)
-        return bc
 
     def solve_boundary(self,
                        orientation,
@@ -150,12 +134,93 @@ class Solver:
                 element_l = l_2d(solution.k, p, qa, qb, False)
                 element_m = m_2d(solution.k, p, qa, qb, False)
                 if orientation == 'interior':
-                    sum += element_l * solution.velocities[j] - element_m * solution.phis[j]
+                    sum += element_l * solution.velocities[
+                        j] - element_m * solution.phis[j]
                 elif orientation == 'exterior':
-                    sum -= element_l * solution.velocities[j] - element_m * solution.phis[j]
+                    sum -= element_l * solution.velocities[
+                        j] - element_m * solution.phis[j]
                 else:
                     assert False, 'Invalid orientation: {}'.format(orientation)
             result[i] = sum
 
         return result
 
+
+class BoundarySolution:
+
+    def __init__(self, solver, orientation, boundary_condition, k, celerity,
+                 phis, velocities):
+        self.solver = solver
+        self.boundary_condition = boundary_condition
+        self.k = k
+        self.c = celerity
+        self.phis = phis
+        self.velocities = velocities
+        self.orientation = orientation
+
+    def __repr__(self):
+        result = self.__class__.__name__ + "("
+        result += "solver = " + repr(self.solver) + ", "
+        result += "boundary_condition = " + repr(
+            self.boundary_condition) + ", "
+        result += "k = " + repr(self.k) + ", "
+        result += "aPhi = " + repr(self.phis) + ", "
+        result += "aV = " + repr(self.velocities) + ")"
+        return result
+
+    def __str__(self):
+        res = "k:      {} 1/m\n".format(self.k)
+        res = "c:      {} m/s\n".format(self.c)
+        res += "index   Potential               eta\n\n"
+        for i in range(self.phis.size):
+            eta = wave.eta(self.phis[i], self.k, self.c)
+            res += f"{i+1} {self.phis[i]} {eta}\n"
+            # print(eta)
+            # print(self.phis[i])
+            # res += "{:5d}  {:1.4e}{:+1.4e}  {:1.4e}{:+1.4e} \n".format(
+            #     i + 1,
+            #     self.phis[i].real,
+            #     self.phis[i].imag,
+            #     eta.real,
+            #     eta.imag,
+            # )
+        return res
+
+    def eta(self):
+        return wave.eta(self.phis, self.k, self.c)
+
+    def solve_samples(self, incident_phis, points):
+        return SampleSolution(
+            self,
+            self.solver.solve_samples(self, incident_phis, points,
+                                      self.orientation))
+
+
+class SampleSolution:
+
+    def __init__(self, boundary_solution, phis):
+        self.boundarySolution = boundary_solution
+        self.phis = phis
+
+    def eta(self):
+        return wave.eta(self.phis, self.boundarySolution.k,
+                        self.boundarySolution.c)
+
+    def __repr__(self):
+        result = "SampleSolution("
+        result += "boundarySolution = " + repr(self.boundarySolution) + ", "
+        result += "aPhi = " + repr(self.phis) + ")"
+        return result
+
+    def __str__(self):
+        result = "index   Potential                eta\n\n"
+        for i in range(self.phis.size):
+            eta = wave.eta(self.boundarySolution.k,
+                           self.phis[i],
+                           c=self.boundarySolution.c)
+
+            result += f"{i+1} {self.phis[i]} {eta}\n"
+            # result += "{:5d}  {: 1.4e}{:+1.4e}i  {: 1.4e}{:+1.4e}i\n".format( \
+            #     i+1, self.phis[i].real, self.phis[i].imag, eta.real, eta.imag, )
+
+        return result

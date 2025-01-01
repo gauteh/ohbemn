@@ -25,9 +25,21 @@ def eta(phi, k, c):
     return (1j * -1 / g * w * phi)
 
 
+def wavelength(c, f):
+    return c / f
+
+
 def wavec_interm(T, h, g=g, N=200, prt=False):
     """
-    Phase speed (iterative, N, from jan-victor)
+    Phase speed intermediate waters.
+
+    Iterative calculation, N iterations (from jan-victor). Also suggested in Holthuijsen (I think).
+
+    Returns:
+
+        c:  phase speed [m/s]
+        cg: group speed [m/s]
+        k:  wave number [1/m]
     """
     T = np.atleast_1d(T)
     assert np.all(h > 0)
@@ -48,6 +60,15 @@ def wavec_interm(T, h, g=g, N=200, prt=False):
 
 
 def wavec_deep(T, g=9.82):
+    """
+    Phase speed (deep-water)
+
+    Returns:
+
+        c:  phase speed [m/s]
+        cg: group speed [m/s]
+        k:  wave number [1/m]
+    """
     cp = g / (2 * np.pi) * T
     k = cp * T
     cg = cp / 2

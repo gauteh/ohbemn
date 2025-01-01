@@ -1,7 +1,6 @@
 import numpy as np
 
 from . import geometry
-from . import wave
 
 
 class Region:
@@ -174,83 +173,3 @@ class BoundaryIncidence:
     def __init__(self, size):
         self.phi = np.zeros(size, dtype=np.complex64)
         self.v = np.zeros(size, dtype=np.complex64)
-
-
-class BoundarySolution:
-
-    def __init__(self, solver, orientation, boundary_condition, k, celerity,
-                 phis, velocities):
-        self.solver = solver
-        self.boundary_condition = boundary_condition
-        self.k = k
-        self.c = celerity
-        self.phis = phis
-        self.velocities = velocities
-        self.orientation = orientation
-
-    def __repr__(self):
-        result = self.__class__.__name__ + "("
-        result += "solver = " + repr(self.solver) + ", "
-        result += "boundary_condition = " + repr(
-            self.boundary_condition) + ", "
-        result += "k = " + repr(self.k) + ", "
-        result += "aPhi = " + repr(self.phis) + ", "
-        result += "aV = " + repr(self.velocities) + ")"
-        return result
-
-    def __str__(self):
-        res = "k:      {} 1/m\n".format(self.k)
-        res = "c:      {} m/s\n".format(self.c)
-        res += "index   Potential               eta\n\n"
-        for i in range(self.phis.size):
-            eta = wave.eta(self.phis[i], self.k, self.c)
-            res += f"{i+1} {self.phis[i]} {eta}\n"
-            # print(eta)
-            # print(self.phis[i])
-            # res += "{:5d}  {:1.4e}{:+1.4e}  {:1.4e}{:+1.4e} \n".format(
-            #     i + 1,
-            #     self.phis[i].real,
-            #     self.phis[i].imag,
-            #     eta.real,
-            #     eta.imag,
-            # )
-        return res
-
-    def eta(self):
-        return wave.eta(self.phis, self.k, self.c)
-
-    def solve_samples(self, incident_phis, points):
-        return SampleSolution(
-            self,
-            self.solver.solve_samples(self, incident_phis, points,
-                                      self.orientation))
-
-
-class SampleSolution:
-
-    def __init__(self, boundary_solution, phis):
-        self.boundarySolution = boundary_solution
-        self.phis = phis
-
-    def eta(self):
-        return wave.eta(self.phis, self.boundarySolution.k,
-                        self.boundarySolution.c)
-
-    def __repr__(self):
-        result = "SampleSolution("
-        result += "boundarySolution = " + repr(self.parent) + ", "
-        result += "aPhi = " + repr(self.phis) + ")"
-        return result
-
-    def __str__(self):
-        result = "index   Potential                eta\n\n"
-        for i in range(self.phis.size):
-            eta = wave.eta(self.boundarySolution.k,
-                           self.phis[i],
-                           c=self.boundarySolution.c)
-
-            result += f"{i+1} {self.phis[i]} {eta}\n"
-            # result += "{:5d}  {: 1.4e}{:+1.4e}i  {: 1.4e}{:+1.4e}i\n".format( \
-            #     i+1, self.phis[i].real, self.phis[i].imag, eta.real, eta.imag, )
-
-        return result

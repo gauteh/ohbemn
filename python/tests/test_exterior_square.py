@@ -19,7 +19,7 @@ def test_exterior_abem_dirichlet():
 
     solver = Solver(region)
 
-    boundary_condition = solver.dirichlet_boundary_condition()
+    boundary_condition = region.dirichlet_boundary_condition()
     centers = solver.region.centers()
     for i in range(centers.shape[0]):
         r = norm(centers[i, :] - center_square)
