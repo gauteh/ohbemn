@@ -25,10 +25,14 @@ class Solver:
             for j in range(self.len()):
                 qa, qb = self.region.edge(j)
 
-                element_l = l_2d(k, center, qa, qb, i == j)
-                element_m = m_2d(k, center, qa, qb, i == j)
-                element_mt = mt_2d(k, center, normal, qa, qb, i == j)
-                element_n = n_2d(k, center, normal, qa, qb, i == j)
+                element_l = np.atleast_1d(l_2d(k, center, qa, qb, i == j))[0]
+                element_m = np.atleast_1d(m_2d(k, center, qa, qb, i == j))[0]
+                element_mt = np.atleast_1d(
+                    mt_2d(k, center, normal, qa, qb, i == j))[0]
+                element_n = np.atleast_1d(
+                    n_2d(k, center, normal, qa, qb, i == j))[0]
+
+                mu = np.atleast_1d(mu)[0]
 
                 A[i, j] = element_l + mu * element_mt
                 B[i, j] = element_m + mu * element_n
@@ -58,6 +62,7 @@ class Solver:
                        boundary_incidence,
                        mu=None):
         mu = mu or (1j / (k + 1))
+        mu = np.atleast_1d(mu)[0]
         assert boundary_condition.f.size == self.len()
         A, B = self.compute_boundary_matrices(k, mu, orientation)
         c = np.empty(self.len(), dtype=np.complex64)
@@ -141,7 +146,9 @@ class Solver:
                         j] - element_m * solution.phis[j]
                 else:
                     assert False, 'Invalid orientation: {}'.format(orientation)
-            result[i] = sum
+            sum = np.atleast_1d(sum)
+            assert len(sum) == 1
+            result[i] = sum[0]
 
         return result
 

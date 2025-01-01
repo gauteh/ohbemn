@@ -16,4 +16,45 @@ def test_pool():
 
 def test_acousticbem():
     # https://github.com/lzhw1991/AcousticBEM/blob/master/Jupyter/Rectangular%20Interior%20Helmholtz%20Problems.ipynb
-    pass
+    f = 1/5. # [Hz]
+    T = 1/f
+    d = 40.  # [m]
+    c, cg, k = wave.wavec_interm(T, d)
+    print("wave length:", c/f)
+
+    region = Region.rectangle(100, 100, 32, 32)
+    print("elements:", region.len())
+
+    # Specifying boundary conditions
+
+    bc = region.boundary_condition()
+    bc.alpha.fill(1.0)
+    bc.beta.fill(1.0)
+    bc.f.fill(0.5j)
+    bc.f[0:(2*32)].fill(1.0)
+    # self.boundaryCondition.f[ 0] = 1.0
+    # self.boundaryCondition.f[-1] = 1.0
+
+    # definition of incident fields on boundary
+
+    bi = region.boundary_incidence()
+    bi.phi.fill(0.0) # no incoming velocity potential on boundary
+    bi.v.fill(0.0)   # no incoming velocity on boundary
+
+    # Interior grid where we want to know the field
+    xi = np.arange(0, 100, 30)
+    yi = np.arange(0, 100, 30)
+    xx, yy = np.meshgrid(xi, yi)
+    xx, yy = xx.ravel(), yy.ravel()
+
+    ip = np.vstack((xx, yy)).T
+    print("Interior points:", ip.shape[0])
+    i_incident = np.zeros(ip.shape[0])
+
+    # Ready to solve!
+
+    solver = Solver(region)
+    boundary_solution = solver.solve_boundary('interior', k, c, bc, bi)
+
+    # Now we can solve the field at the interior points:
+    interior = boundary_solution.solve_samples(i_incident, ip)
