@@ -9,4 +9,5 @@ name = "ohbemn"
 crate-type = ["cdylib"]
 
 [dependencies]
+gauss-quad = "0.2.2"
 pyo3 = "0.23.1"
