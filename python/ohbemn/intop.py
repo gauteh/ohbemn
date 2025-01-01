@@ -2,7 +2,7 @@ import numpy as np
 from numpy.linalg import norm
 from scipy.special import hankel1
 
-from .geometry import norm2d as normal_2d
+from .geometry import normal_2d
 
 
 def complex_quad_2d(func, start, end):

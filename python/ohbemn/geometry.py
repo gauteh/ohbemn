@@ -2,9 +2,9 @@ import numpy as np
 from numpy.linalg import norm
 
 
-def norm2d(a, b):
+def normal_2d(a, b):
     """
-    Calculate the l2-norm for a vector from point a and b.
+    Calculate the normal between two points.
     """
     diff = a - b
     L = norm(diff)

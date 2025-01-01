@@ -1,23 +1,17 @@
 use pyo3::prelude::*;
 
-/// Formats the sum of two numbers as string.
-#[pyfunction]
-fn sum_as_string(a: usize, b: usize) -> PyResult<String> {
-    Ok((a + b).to_string())
-}
+pub mod integrators;
 
 /// A Python module implemented in Rust.
 #[pymodule]
 fn ohbemn(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(sum_as_string, m)?)?;
+    m.add_function(wrap_pyfunction!(integrators::complex_quad, m)?)?;
     Ok(())
 }
 
+/// Formats the sum of two numbers as string.
 #[pyfunction]
-fn complex_quad() {
-    use gauss_quad::GaussLegendre;
-
-    let g = GaussLegendre::new(8).unwrap();
-
-    unimplemented!()
+fn sum_as_string(a: usize, b: usize) -> PyResult<String> {
+    Ok((a + b).to_string())
 }

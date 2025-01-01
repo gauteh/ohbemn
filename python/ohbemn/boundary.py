@@ -96,7 +96,7 @@ class Region:
         return Region(v, e)
 
     @classmethod
-    def rectangle(cls, width, height, elements_x, elements_y):
+    def rectangle(cls, width, height, elements_x, elements_y, x0=0, y0=0):
         nBoudnaryElements = 2 * (elements_x + elements_y)
         # boundary elements are edges
         aEdge = np.empty((nBoudnaryElements, 2), dtype=np.int32)

@@ -35,6 +35,16 @@ def phi(eta, k, c):
     return -g / (1j * w) * eta
 
 
+def phi_depth(k, z, h):
+    """
+    Phi as a function of depth.
+    """
+    assert h > 0
+    assert z > 0
+
+    return np.cosh(k * (z + h)) / np.cosh(k * h)
+
+
 def wavelength(c, f):
     return c / f
 
