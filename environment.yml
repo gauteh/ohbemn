@@ -2,6 +2,7 @@ name: ohbemn
 channels:
   - conda-forge
 dependencies:
+  - python=3.12
   - xarray
   - numpy
   - scipy
@@ -9,6 +10,7 @@ dependencies:
   - coloredlogs
   - pytest
   - pytest-benchmark
+  - pytest-profiling
   - matplotlib
   - cartopy
   - pyproj
