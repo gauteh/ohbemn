@@ -13,6 +13,7 @@ def point(k, x, y):
 
         x,y: point to evaluate
     """
+    r = np.sqrt(x**2 + y**2)
     return 1j * hankel1(0, k * r) / 4.0
 
 
