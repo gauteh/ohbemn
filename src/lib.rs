@@ -7,6 +7,7 @@ pub mod integrators;
 pub mod solver;
 
 pub type A2<'a> = ArrayView<'a, f64, Dim<[usize; 1]>>;
+pub type A2N<'a> = ArrayView<'a, f64, Dim<[usize; 2]>>;
 pub type A2O = Array<f64, Dim<[usize; 1]>>;
 
 #[pyclass]
