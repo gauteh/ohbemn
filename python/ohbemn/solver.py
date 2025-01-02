@@ -137,7 +137,7 @@ class Solver:
             for j in range(solution.phis.size):
                 qa, qb = self.region.edge(j)
 
-                element_l = l_2d(solution.k, p, qa, qb, False)
+                element_l = l_2d(solution.k, p.astype(np.float64), qa.astype(np.float64), qb.astype(np.float64), False)
                 element_m = m_2d(solution.k, p, qa, qb, False)
                 if orientation == 'interior':
                     sum += element_l * solution.velocities[

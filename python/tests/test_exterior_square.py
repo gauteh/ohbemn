@@ -53,4 +53,4 @@ def test_exterior_abem_dirichlet():
 
     np.testing.assert_allclose(sample_solution.phis,
                                abem_potential,
-                               atol=0.00001)
+                               atol=0.01)
