@@ -78,11 +78,6 @@ pub fn l_2d(k: f64, p: A2, qa: A2, qb: A2, p_on_element: bool) -> Complex<f64> {
         // complex quad
         complex_quad_2d(&qa, &p, int) + complex_quad_2d(&p, &qb, int) + l
     } else {
-        // let int = |x: Array1<f64>| -> Complex<f64> {
-        //     let R = (&p - x).norm_l2();
-        //     return h1_nu(0.0, Complex::new(k, 0.0) * R);
-        // };
-
         // complex quad
         Complex::new(0.0, 0.25)
             * complex_quad_2d(&qa, &qb, |q: A2| {
