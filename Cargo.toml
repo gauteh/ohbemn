@@ -9,10 +9,10 @@ name = "ohbemn"
 crate-type = ["cdylib"]
 
 [dependencies]
+complex-bessel-rs = "1.2.1"
 gauss-quad = "0.2.2"
 ndarray = "0.15.6"
 ndarray-linalg = "0.16.0"
 num = "0.4.3"
 numpy = "0.23.0"
-pyo3 = "0.23.1"
-scilib = "1.0.0"
+pyo3 = { version = "0.23.1", features = [ "num-complex" ] }

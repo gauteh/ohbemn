@@ -1,6 +1,7 @@
 import numpy as np
 
-from .intop import l_2d, m_2d, mt_2d, n_2d
+from ohbemn import l_2d
+from .intop import m_2d, mt_2d, n_2d
 from . import wave
 
 
@@ -25,7 +26,7 @@ class Solver:
             for j in range(self.len()):
                 qa, qb = self.region.edge(j)
 
-                element_l = np.atleast_1d(l_2d(k, center, qa, qb, i == j))[0]
+                element_l = np.atleast_1d(l_2d(k, center.astype(np.float64), qa.astype(np.float64), qb.astype(np.float64), i == j))[0]
                 element_m = np.atleast_1d(m_2d(k, center, qa, qb, i == j))[0]
                 element_mt = np.atleast_1d(
                     mt_2d(k, center, normal, qa, qb, i == j))[0]

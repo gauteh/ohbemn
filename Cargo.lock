@@ -60,10 +60,29 @@ dependencies = [
 ]
 
 [[package]]
+name = "cc"
+version = "1.2.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8d6dbb628b8f8555f86d0323c2eb39e3ec81901f4b83e091db8a6a76d316a333"
+dependencies = [
+ "shlex",
+]
+
+[[package]]
 name = "cfg-if"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
+
+[[package]]
+name = "complex-bessel-rs"
+version = "1.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "16ebd796dd4b1ac5288f92d1df3782c323c6bf325c94b6f2ee3ec1776ab89ab2"
+dependencies = [
+ "cc",
+ "num",
+]
 
 [[package]]
 name = "gauss-quad"
@@ -296,13 +315,13 @@ dependencies = [
 name = "ohbemn"
 version = "0.1.0"
 dependencies = [
+ "complex-bessel-rs",
  "gauss-quad",
  "ndarray",
  "ndarray-linalg",
  "num",
  "numpy",
  "pyo3",
- "scilib",
 ]
 
 [[package]]
@@ -351,6 +370,7 @@ dependencies = [
  "indoc",
  "libc",
  "memoffset",
+ "num-complex",
  "once_cell",
  "portable-atomic",
  "pyo3-build-config",
@@ -465,15 +485,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "scilib"
-version = "1.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "acf03303d83bf30bb4a4637ac7b3d9e4fa96c51e4d8960043d552e0fb4937cb3"
-dependencies = [
- "num-complex",
-]
-
-[[package]]
 name = "serde"
 version = "1.0.217"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -492,6 +503,12 @@ dependencies = [
  "quote",
  "syn 2.0.92",
 ]
+
+[[package]]
+name = "shlex"
+version = "1.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0fda2ff0d084019ba4d7c6f371c95d8fd75ce3524c3cb8fb653a3023f6323e64"
 
 [[package]]
 name = "simba"

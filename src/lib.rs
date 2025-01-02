@@ -8,7 +8,7 @@ pub mod solver;
 #[pymodule]
 fn ohbemn(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(sum_as_string, m)?)?;
-    // m.add_function(wrap_pyfunction!(integrators::complex_quad, m)?)?;
+    m.add_function(wrap_pyfunction!(integrators::l_2d_py, m)?)?;
     Ok(())
 }
 

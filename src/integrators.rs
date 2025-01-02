@@ -1,31 +1,31 @@
+use std::f64::consts::PI;
 use std::sync::LazyLock;
 
 use gauss_quad::GaussLegendre;
-use ndarray::{Array, Array1, Dim};
+use ndarray::{Array, Array1, ArrayView, Dim};
 use ndarray_linalg::{normalize, Norm, NormalizeAxis as Axis};
-use numpy::{IntoPyArray, PyArrayDyn, PyReadonlyArrayDyn, PyArrayMethods};
 use num::Complex;
+use numpy::{Complex64, IntoPyArray, PyArray, PyArrayDyn, PyArrayMethods, PyReadonlyArrayDyn};
 use pyo3::prelude::*;
-use scilib::math::bessel::h1_nu;
 
-pub type A2 = Array<f64, Dim<[usize; 2]>>;
+pub type A2<'a> = ArrayView<'a, f64, Dim<[usize; 1]>>;
 
 static quad: LazyLock<GaussLegendre> = LazyLock::new(|| GaussLegendre::new(8).unwrap());
 
-pub fn complex_quad_2d<F>(a: A2, b: A2, integrand: F) -> Complex<f64>
+pub fn hankel1(order: f64, z: Complex64) -> Complex64 {
+    use complex_bessel_rs::bessel_j::bessel_j;
+    use complex_bessel_rs::bessel_y::bessel_y;
+
+    bessel_j(order, z).unwrap_or(Complex64::new(f64::NAN, f64::NAN))
+        + Complex64::new(0.0, 1.0)
+            * bessel_y(order, z).unwrap_or(Complex64::new(f64::NAN, f64::NAN))
+}
+
+pub fn complex_quad_2d<F>(a: &A2, b: &A2, integrand: F) -> Complex<f64>
 where
     F: Fn(A2) -> Complex<f64>,
 {
-    let v = b - a.clone();
-
-    // quad.as_node_weight_pairs()
-    //     .iter()
-    //     .map(|(x_val, w_val)| {
-    //         // integrand(Self::argument_transformation(*x_val, a, b)) * w_val)
-    //         let x = a.clone() + *x_val * v.clone();
-    //         integrand(x) * w_val
-    //     })
-    //     .sum()
+    let v = b - a;
 
     let nw = [
         [0.980144928249, 5.061426814519e-02],
@@ -42,37 +42,16 @@ where
         .map(|nw| {
             let x_val = nw[0];
             let w_val = nw[1];
-            let x = a.clone() + x_val * v.clone();
-            integrand(x) * w_val
+            let x = a + x_val * v.clone();
+            let i = integrand(x.view()) * w_val;
+
+            // println!("{x}, {w_val}, {i}");
+
+            i
         })
-        .sum()
+        .sum::<Complex64>()
+        * v.norm_l2()
 }
-// def l_2d(k, p, qa, qb, p_on_element):
-//     qab = qb - qa
-//     if p_on_element:
-//         if k == 0.0:
-//             ra = norm(p - qa)
-//             rb = norm(p - qb)
-//             re = norm(qab)
-//             result = 0.5 / np.pi * (re - (ra * np.log(ra) + rb * np.log(rb)))
-//         else:
-
-//             def func(x):
-//                 R = norm(p - x)
-//                 return 0.5 / np.pi * np.log(R) + 0.25j * hankel1(0, k * R)
-
-//             result = (complex_quad_2d(func, qa, p) +
-//                       complex_quad_2d(func, p, qb) +
-//                       l_2d(0.0, p, qa, qb, True))
-//     else:
-//         if k == 0.0:
-//             result = -0.5 / np.pi * complex_quad_2d(
-//                 lambda q: np.log(norm(p - q)), qa, qb)
-//         else:
-//             result = 0.25j * complex_quad_2d(
-//                 lambda q: hankel1(0, k * norm(p - q)), qa, qb)
-
-//     return result
 
 /// Compute L matrix.
 ///
@@ -80,27 +59,53 @@ where
 /// p: point (center of edge)
 /// qa: first vertex of edge
 /// qb: second vertex of edge
-pub fn l_2d(k: f64, p: A2, qa: A2, qb: A2, p_on_element: bool) {
+pub fn l_2d(k: f64, p: A2, qa: A2, qb: A2, p_on_element: bool) -> Complex<f64> {
     assert!(k > 0.0, "wavenumber==0 not supported");
 
     // TODO: Possibly put in a different function.
     if p_on_element {
         let int = |x: A2| -> Complex<f64> {
-            let R = (&p - x).norm_l2();
-            return 0.5 * std::f64::consts::PI * f64::log2(R)
-                + Complex::new(0.0, 0.25) * h1_nu(0.0, Complex::new(k, 0.0) * R);
+            let R = (p.to_owned() - x).norm_l2();
+            return 0.5 / PI * f64::log2(R)
+                + Complex::new(0.0, 0.25) * hankel1(0.0, Complex::new(k, 0.0) * R);
         };
 
+        let ra = (&p - &qa).norm_l2();
+        let rb = (&p - &qb).norm_l2();
+        let re = (&qb - &qa).norm_l2();
+        let l = 0.5 / PI * (re - (ra * f64::log2(ra) + rb * f64::log2(rb)));
+
         // complex quad
-        complex_quad_2d(qa, p.clone(), int);
+        complex_quad_2d(&qa, &p, int) + complex_quad_2d(&p, &qb, int) + l
     } else {
-        let int = |x: Array1<f64>| -> Complex<f64> {
-            let R = (p - x).norm_l2();
-            return h1_nu(0.0, Complex::new(k, 0.0) * R);
-        };
+        // let int = |x: Array1<f64>| -> Complex<f64> {
+        //     let R = (&p - x).norm_l2();
+        //     return h1_nu(0.0, Complex::new(k, 0.0) * R);
+        // };
 
         // complex quad
+        Complex::new(0.0, 0.25)
+            * complex_quad_2d(&qa, &qb, |q: A2| {
+                hankel1(0.0, Complex::new(k, 0.0) * (p.to_owned() - q).norm_l2())
+            })
     }
+}
+
+#[pyfunction]
+#[pyo3(name = "l_2d")]
+pub fn l_2d_py<'py>(
+    py: Python<'py>,
+    k: f64,
+    p: PyReadonlyArrayDyn<'py, f64>,
+    qa: PyReadonlyArrayDyn<'py, f64>,
+    qb: PyReadonlyArrayDyn<'py, f64>,
+    p_on_element: bool,
+) -> Complex64 {
+    let p = p.as_array().into_shape((2,)).unwrap();
+    let qa = qa.as_array().into_shape((2,)).unwrap();
+    let qb = qb.as_array().into_shape((2,)).unwrap();
+
+    l_2d(k, p, qa, qb, p_on_element)
 }
 
 #[cfg(test)]
@@ -123,5 +128,36 @@ mod tests {
         for (n, w) in quad.as_node_weight_pairs() {
             println!("{n}: {w}");
         }
+    }
+
+    #[test]
+    fn test_hankel1() {
+        for j in ndarray::Array::range(0.0, 10.0, 1.0) {
+            // let h = h1_nu(0.0, Complex::new(10., 0.0) * j);
+            let h2 = hankel1(0.0, Complex::new(10., 0.0) * j);
+            // println!("{j} = {h:?}");
+            println!("{j} = {h2:?}");
+        }
+    }
+
+    #[test]
+    fn test_complex_quad() {
+        use ndarray::array;
+
+        let k = 10.;
+        let qa = array![0.0, 0.0].into_shape((2,)).unwrap();
+        let qb = array![10.0, 10.0].into_shape((2,)).unwrap();
+        let p = array![1.0, 1.0].into_shape((2,)).unwrap();
+
+        println!("h1 = {:?}", hankel1(0.0, Complex::new(5., 0.) * 3.));
+
+        let r = complex_quad_2d(&qa.view(), &qb.view(), |q: A2| {
+            dbg!(&q);
+            dbg!(&p);
+            let h = hankel1(0.0, Complex::new(k, 0.0) * (p.to_owned() - q).norm_l2());
+            dbg!(&h);
+            h
+        });
+        dbg!(r);
     }
 }
