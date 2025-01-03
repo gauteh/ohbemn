@@ -98,7 +98,7 @@ pub fn l_2d(k: f64, p: A2, qa: A2, qb: A2, p_on_element: bool) -> Complex<f64> {
 pub fn m_2d(k: f64, p: A2, qa: A2, qb: A2, p_on_element: bool) -> Complex<f64> {
     assert!(k > 0.0, "wavenumber==0 not supported");
 
-    let vecq = normal_2d(qa, qb);
+    let (vecq, _) = normal_2d(qa, qb);
 
     if p_on_element {
         Complex::new(0.0, 0.0)
@@ -122,7 +122,7 @@ pub fn m_2d(k: f64, p: A2, qa: A2, qb: A2, p_on_element: bool) -> Complex<f64> {
 pub fn mt_2d(k: f64, p: A2, qa: A2, qb: A2, p_on_element: bool) -> Complex<f64> {
     assert!(k > 0.0, "wavenumber==0 not supported");
 
-    let vecq = normal_2d(qa, qb);
+    let (vecq, _) = normal_2d(qa, qb);
 
     if p_on_element {
         Complex::new(0.0, 0.0)
@@ -147,7 +147,7 @@ pub fn n_2d(k: f64, p: A2, vecp: A2, qa: A2, qb: A2, p_on_element: bool) -> Comp
     assert!(k > 0.0, "wavenumber==0 not supported");
 
     let qab = qb.to_owned() - qa;
-    let vecq = normal_2d(qa, qb);
+    let (vecq, _) = normal_2d(qa, qb);
 
     if p_on_element {
         let ra = (p.to_owned() - qa).norm_l2();

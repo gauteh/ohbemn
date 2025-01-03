@@ -75,21 +75,6 @@ class Region:
             self._compute_lengths_and_normals()
         return self._normals
 
-    def areas(self, named_partition=None):
-        """The areas of the surfaces created by rotating an edge around the x-axis."""
-        if self._areas is None:
-            self._areas = np.empty(self._edges.shape[0], dtype=np.float32)
-            for i in range(self._areas.size):
-                a, b = self.edge(i)
-                self._areas[i] = np.pi * (a[0] +
-                                          b[0]) * np.sqrt((a[0] - b[0])**2 +
-                                                          (a[1] - b[1])**2)
-        if named_partition is None:
-            return self._areas
-        else:
-            partition = self.named_partition[named_partition]
-            return self._areas[partition[0]:partition[1]]
-
     @classmethod
     def square(cls, w=100.):
         v, e = geometry.square(w)
