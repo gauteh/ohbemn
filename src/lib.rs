@@ -21,10 +21,9 @@ pub enum Orientation {
     Exterior,
 }
 
-/// A Python module implemented in Rust.
+/// Ocean Boundary Element Method implemented in Rust.
 #[pymodule]
 fn ohbemn(m: &Bound<'_, PyModule>) -> PyResult<()> {
-    m.add_function(wrap_pyfunction!(sum_as_string, m)?)?;
     m.add_function(wrap_pyfunction!(integrators::l_2d_py, m)?)?;
     m.add_class::<Orientation>()?;
 
@@ -35,10 +34,4 @@ fn ohbemn(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Solver>()?;
     m.add_class::<BoundarySolution>()?;
     Ok(())
-}
-
-/// Formats the sum of two numbers as string.
-#[pyfunction]
-fn sum_as_string(a: usize, b: usize) -> PyResult<String> {
-    Ok((a + b).to_string())
 }
