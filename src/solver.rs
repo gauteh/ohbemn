@@ -1,11 +1,13 @@
 use std::f64::consts::PI;
+use std::mem::swap;
 use std::sync::Arc;
 
 use ndarray::{
+    prelude::*,
     array, concatenate, s, Array, Array1, Array2, Array3, ArrayView, ArrayView2, Axis, Dim,
 };
-use ndarray_linalg::Norm;
-use num::Complex;
+use ndarray_linalg::{Norm, Solve};
+use num::{complex::ComplexFloat, Complex};
 use numpy::{
     Complex64, IntoPyArray, PyArray, PyArray1, PyArray2, PyArray3, PyArrayDyn, PyArrayMethods,
     PyReadonlyArray2, PyReadonlyArrayDyn, PyUntypedArrayMethods, ToPyArray,
@@ -91,14 +93,80 @@ impl Solver {
     pub fn solve_boundary(
         self: Arc<Self>,
         orientation: Orientation,
-        k: f32,
-        celerity: f32,
+        k: f64,
+        celerity: f64,
         boundary_condition: BoundaryCondition,
         boundary_incidence: BoundaryIncidence,
         mu: Option<Complex64>,
     ) -> BoundarySolution {
+        let mu = mu.unwrap_or(Complex64::new(0., 1.) / Complex64::new(k + 1., 0.));
+
+        assert_eq!(boundary_condition.len(), self.len());
+        assert_eq!(boundary_incidence.len(), self.len());
+
+        let (A, B) = self.compute_boundary_matrices(k, mu, orientation);
+
+        let c = match orientation {
+            Orientation::Interior => boundary_incidence.phi + mu * boundary_incidence.v,
+            Orientation::Exterior => -boundary_incidence.phi + mu * boundary_incidence.v,
+        };
+
         unimplemented!()
     }
+}
+
+fn solve_linear_equation(
+    mut A: Array2<Complex64>,
+    mut B: Array2<Complex64>,
+    mut c: Array1<Complex64>,
+    alpha: Array1<Complex64>,
+    beta: Array1<Complex64>,
+    f: Array1<Complex64>,
+) -> (Array1<Complex64>, Array1<Complex64>) {
+    let mut x = Array1::<Complex64>::zeros(c.len());
+    let mut y = Array1::<Complex64>::zeros(c.len());
+
+    let gamma = B.norm_max() / A.norm_max();
+
+    let mut swapXY = Array1::<bool>::default(c.len());
+    for i in 0..c.len() {
+        if beta[i].abs() >= gamma * alpha[i].abs() {
+            swapXY[i] = true;
+        }
+    }
+
+    for i in 0..c.len() {
+        if swapXY[i] {
+            for j in 0..alpha.len() {
+                c[j] += f[i] * B[[j, i]] / beta[i];
+                B[[j, i]] = -alpha[i] * B[[j, i]] / beta[i];
+            }
+        } else {
+            for j in 0..alpha.len() {
+                c[j] -= f[i] * A[[j, i]] / alpha[i];
+                A[[j, i]] = -beta[i] * A[[j, i]] / alpha[i];
+            }
+        }
+    }
+
+    A = A - B;
+    y = A.solve_into(c).unwrap();
+
+    for i in 0..c.len() {
+        if swapXY[i] {
+            x[i] = (f[i] - alpha[i] * y[i]) / beta[i];
+        } else {
+            x[i] = (f[i] - beta[i] * y[i]) / alpha[i];
+        }
+    }
+
+    for i in 0..c.len() {
+        if swapXY[i] {
+            swap(&mut x[i], &mut y[i]);
+        }
+    }
+
+    (x, y)
 }
 
 #[pyclass]

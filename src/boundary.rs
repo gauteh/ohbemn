@@ -192,6 +192,10 @@ impl BoundaryCondition {
 
         BoundaryCondition { alpha, beta, f }
     }
+
+    pub fn len(&self) -> usize {
+        self.f.len()
+    }
 }
 
 #[pyclass]
@@ -208,5 +212,9 @@ impl BoundaryIncidence {
         let v = Array1::zeros(size);
 
         BoundaryIncidence { phi, v }
+    }
+
+    pub fn len(&self) -> usize {
+        self.phi.len()
     }
 }

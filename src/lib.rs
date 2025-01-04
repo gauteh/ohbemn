@@ -12,7 +12,7 @@ pub type A2N<'a> = ArrayView<'a, f64, Dim<[usize; 2]>>;
 pub type A2O = Array<f64, Dim<[usize; 1]>>;
 
 #[pyclass]
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy)]
 pub enum Orientation {
     Interior,
     Exterior,
