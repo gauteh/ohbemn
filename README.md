@@ -4,17 +4,17 @@
 
 ## Installation
 
-1. Install dependencies: `gfortran` and `rust`. Can also be via conda after
+1. Install dependencies: `gfortran` and `rust`. Can also be installed via mamba after
    you have set up and activated the environment below.
 
-1. Set up and activate the conda environment:
+1. Set up and activate the conda/mamba environment:
 
 ```sh
 $ mamba env create -f environment.yml
 $ conda activate ohbemn
 ```
 
-1. Build and install this package into the conda environment:
+1. Build and install this package into the conda/mamba environment:
 
 ```sh
 $ pip install -e .
