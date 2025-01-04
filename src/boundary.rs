@@ -176,6 +176,7 @@ impl Region {
 /// alpha = 0
 /// beta = 1
 #[pyclass]
+#[derive(Clone, Debug)]
 pub struct BoundaryCondition {
     pub alpha: Array1<Complex64>,
     pub beta: Array1<Complex64>,

@@ -3,8 +3,8 @@ use std::mem::swap;
 use std::sync::Arc;
 
 use ndarray::{
-    prelude::*,
-    array, concatenate, s, Array, Array1, Array2, Array3, ArrayView, ArrayView2, Axis, Dim,
+    array, concatenate, prelude::*, s, Array, Array1, Array2, Array3, ArrayView, ArrayView2, Axis,
+    Dim,
 };
 use ndarray_linalg::{Norm, Solve};
 use num::{complex::ComplexFloat, Complex};
@@ -111,7 +111,16 @@ impl Solver {
             Orientation::Exterior => -boundary_incidence.phi + mu * boundary_incidence.v,
         };
 
-        unimplemented!()
+        let (phi, v) = solve_linear_equation(
+            A,
+            B,
+            c,
+            &boundary_condition.alpha,
+            &boundary_condition.beta,
+            &boundary_condition.f,
+        );
+
+        BoundarySolution::new(self, orientation, boundary_condition, k, celerity, phi, v)
     }
 }
 
@@ -119,23 +128,24 @@ fn solve_linear_equation(
     mut A: Array2<Complex64>,
     mut B: Array2<Complex64>,
     mut c: Array1<Complex64>,
-    alpha: Array1<Complex64>,
-    beta: Array1<Complex64>,
-    f: Array1<Complex64>,
+    alpha: &Array1<Complex64>,
+    beta: &Array1<Complex64>,
+    f: &Array1<Complex64>,
 ) -> (Array1<Complex64>, Array1<Complex64>) {
     let mut x = Array1::<Complex64>::zeros(c.len());
     let mut y = Array1::<Complex64>::zeros(c.len());
 
+    let N = c.len();
     let gamma = B.norm_max() / A.norm_max();
 
     let mut swapXY = Array1::<bool>::default(c.len());
-    for i in 0..c.len() {
+    for i in 0..N {
         if beta[i].abs() >= gamma * alpha[i].abs() {
             swapXY[i] = true;
         }
     }
 
-    for i in 0..c.len() {
+    for i in 0..N {
         if swapXY[i] {
             for j in 0..alpha.len() {
                 c[j] += f[i] * B[[j, i]] / beta[i];
@@ -152,7 +162,7 @@ fn solve_linear_equation(
     A = A - B;
     y = A.solve_into(c).unwrap();
 
-    for i in 0..c.len() {
+    for i in 0..N {
         if swapXY[i] {
             x[i] = (f[i] - alpha[i] * y[i]) / beta[i];
         } else {
@@ -160,7 +170,7 @@ fn solve_linear_equation(
         }
     }
 
-    for i in 0..c.len() {
+    for i in 0..N {
         if swapXY[i] {
             swap(&mut x[i], &mut y[i]);
         }
@@ -172,8 +182,8 @@ fn solve_linear_equation(
 #[pyclass]
 pub struct BoundarySolution {
     solver: Arc<Solver>,
-    k: f32,
-    celerity: f32,
+    k: f64,
+    celerity: f64,
     orientation: Orientation,
     boundary_condition: BoundaryCondition,
 
@@ -189,8 +199,8 @@ impl BoundarySolution {
         solver: Arc<Solver>,
         orientation: Orientation,
         bc: BoundaryCondition,
-        k: f32,
-        celerity: f32,
+        k: f64,
+        celerity: f64,
         phis: Array1<Complex64>,
         velocities: Array1<Complex64>,
     ) -> BoundarySolution {
