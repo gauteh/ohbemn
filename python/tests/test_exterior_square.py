@@ -3,13 +3,14 @@ from numpy.linalg import norm
 from scipy.special import hankel1
 import matplotlib.pyplot as plt
 
-from ohbemn import Region, wave, Solver
+import ohbemn as oh
+from ohbemn import ohpy
 
 
-def test_exterior_abem_dirichlet():
+def test_ohpy_exterior_abem_dirichlet():
     # emulate the abem exterior 2d example
     # https://github.com/fjargsto/abem/blob/master/notebooks/exterior_helmholtz_solver_2d.ipynb
-    region = Region.square(0.1)
+    region = ohpy.Region.square(0.1)
 
     f = 400.0  # Hz
     c = 344.0  # speed of sound in air
@@ -17,7 +18,7 @@ def test_exterior_abem_dirichlet():
 
     center_square = np.array([0.05, 0.05], dtype=np.float32)
 
-    solver = Solver(region)
+    solver = ohpy.Solver(region)
 
     boundary_condition = region.dirichlet_boundary_condition()
     centers = solver.region.centers()

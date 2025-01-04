@@ -21,8 +21,8 @@ use crate::{Orientation, A2, A2N};
 
 #[pyclass]
 #[derive(Debug, Clone)]
-struct Solver {
-    region: Region,
+pub struct Solver {
+    pub region: Region,
 }
 
 #[pymethods]

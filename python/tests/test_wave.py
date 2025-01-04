@@ -1,6 +1,8 @@
 import numpy as np
 from numpy.testing import assert_almost_equal
-from ohbemn import wave
+
+import ohbemn as oh
+from ohbemn import ohpy
 
 
 def test_phi_eta():
@@ -9,8 +11,8 @@ def test_phi_eta():
 
     phi = 2. * np.exp(1j * .5 * 13)
 
-    eta = wave.eta(phi, k, c)
+    eta = ohpy.wave.eta(phi, k, c)
     print(eta)
 
-    phi2 = wave.phi(eta, k, c)
+    phi2 = ohpy.wave.phi(eta, k, c)
     assert_almost_equal(phi, phi2)

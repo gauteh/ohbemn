@@ -1,30 +1,19 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from ohbemn import Region, wave, Solver
+import ohbemn as oh
+from ohbemn import ohpy
 
 
-def test_pool():
-    de = 10.0  # meters
-    di = 150.0  # meters
-
-    r = Region.square()
-
-    f, ax = plt.subplots()
-    r.plot(ax)
-
-    print("segments:", r.len())
-
-
-def test_solve_boundary_rectangle_neumann(benchmark):
+def test_ohpy_solve_boundary_rectangle_neumann(benchmark):
     # https://github.com/lzhw1991/AcousticBEM/blob/master/Jupyter/Rectangular%20Interior%20Helmholtz%20Problems.ipynb
     f = 1 / 5.  # [Hz]
     T = 1 / f
     d = 40.  # [m]
-    c, cg, k = wave.wavec_interm(T, d)
+    c, cg, k = ohpy.wave.wavec_interm(T, d)
     print("wave length:", c / f)
 
-    region = Region.rectangle(100, 100, 10, 10)
+    region = ohpy.Region.rectangle(100, 100, 10, 10)
     print("elements:", region.len())
 
     # Specifying boundary conditions
@@ -44,21 +33,21 @@ def test_solve_boundary_rectangle_neumann(benchmark):
     bi.v.fill(0.0)  # no incoming velocity on boundary
 
     # Ready to solve!
-    solver = Solver(region)
+    solver = ohpy.Solver(region)
     boundary_solution = benchmark(solver.solve_boundary, 'interior', k, c, bc,
                                   bi)
     print(boundary_solution)
 
 
-def test_acousticbem_interior_rectangle():
+def test_ohpy_acousticbem_interior_rectangle():
     # https://github.com/lzhw1991/AcousticBEM/blob/master/Jupyter/Rectangular%20Interior%20Helmholtz%20Problems.ipynb
     f = 1 / 5.  # [Hz]
     T = 1 / f
     d = 40.  # [m]
-    c, cg, k = wave.wavec_interm(T, d)
+    c, cg, k = ohpy.wave.wavec_interm(T, d)
     print("wave length:", c / f)
 
-    region = Region.rectangle(100, 100, 10, 10)
+    region = ohpy.Region.rectangle(100, 100, 10, 10)
     print("elements:", region.len())
 
     # Specifying boundary conditions
@@ -89,7 +78,7 @@ def test_acousticbem_interior_rectangle():
 
     # Ready to solve!
 
-    solver = Solver(region)
+    solver = ohpy.Solver(region)
     boundary_solution = solver.solve_boundary('interior', k, c, bc, bi)
 
     # Now we can solve the field at the interior points:

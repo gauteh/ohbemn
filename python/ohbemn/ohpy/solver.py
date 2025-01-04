@@ -1,7 +1,6 @@
 import numpy as np
 
-from ohbemn import l_2d
-from .intop import m_2d, mt_2d, n_2d
+from .intop import l_2d, m_2d, mt_2d, n_2d
 from . import wave
 
 
