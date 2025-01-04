@@ -1,4 +1,4 @@
-# Oh Bemn! Ocean Boundary Element Method
+# Oh Bemn! Ocean Surface Wave Boundary Element Method
 
 <img src="damn.gif" alt="damn! (star trek, picard)"/>
 
