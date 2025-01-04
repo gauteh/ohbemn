@@ -106,9 +106,10 @@ impl Solver {
 
         let (A, B) = self.compute_boundary_matrices(k, mu, orientation);
 
+        let c = boundary_incidence.phi + mu * boundary_incidence.v;
         let c = match orientation {
-            Orientation::Interior => boundary_incidence.phi + mu * boundary_incidence.v,
-            Orientation::Exterior => -boundary_incidence.phi + mu * boundary_incidence.v,
+            Orientation::Interior => c,
+            Orientation::Exterior => -c,
         };
 
         let (phi, v) = solve_linear_equation(
