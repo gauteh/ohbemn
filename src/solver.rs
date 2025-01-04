@@ -80,7 +80,7 @@ impl Region {
 
             let (n, l) = normal_2d(v1, v0);
             normals.slice_mut(s![i, ..]).assign(&n);
-            lengths.slice_mut(s![i]).assign(&array![l]);
+            lengths[i] = l;
         }
 
         Region {
@@ -178,8 +178,8 @@ impl Solver {
                 let a = l + mu * mt;
                 let b = m + mu * n;
 
-                A.slice_mut(s![i, j]).fill(a);
-                B.slice_mut(s![i, j]).fill(b);
+                A[[i, j]] = a;
+                B[[i, j]] = b;
             }
 
             match orientation {
@@ -187,15 +187,15 @@ impl Solver {
                     let a = A[[i, i]] - 0.5 * mu;
                     let b = B[[i, i]] + 0.5;
 
-                    A.slice_mut(s![i, i]).fill(a);
-                    B.slice_mut(s![i, i]).fill(b);
+                    A[[i, i]] = a;
+                    B[[i, i]] = b;
                 }
                 Orientation::Exterior => {
                     let a = A[[i, i]] + 0.5 * mu;
                     let b = B[[i, i]] - 0.5;
 
-                    A.slice_mut(s![i, i]).fill(a);
-                    B.slice_mut(s![i, i]).fill(b);
+                    A[[i, i]] = a;
+                    B[[i, i]] = b;
                 }
             }
         }
