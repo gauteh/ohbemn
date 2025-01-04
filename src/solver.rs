@@ -1,4 +1,5 @@
 use std::f64::consts::PI;
+use std::sync::Arc;
 
 use ndarray::{
     array, concatenate, s, Array, Array1, Array2, Array3, ArrayView, ArrayView2, Axis, Dim,
@@ -11,126 +12,10 @@ use numpy::{
 };
 use pyo3::prelude::*;
 
+use crate::boundary::*;
 use crate::geometry::normal_2d;
 use crate::integrators as int;
 use crate::{Orientation, A2, A2N};
-
-#[pyclass]
-#[derive(Debug, Clone)]
-struct Region {
-    edges: Array2<usize>,
-    vertices: Array2<f64>,
-    normals: Array2<f64>,
-    lengths: Array1<f64>,
-}
-
-impl Region {
-    pub fn centers(&self) -> Array2<f64> {
-        let mut centers = Array2::<f64>::zeros((self.len(), 2));
-
-        for (i, edge) in self.edges.outer_iter().enumerate() {
-            let v0 = self.vertices.index_axis(Axis(0), edge[0]);
-            let v1 = self.vertices.index_axis(Axis(0), edge[1]);
-
-            let c = (v0.to_owned() + v1) / 2.;
-            centers.slice_mut(s![i, ..]).assign(&c);
-        }
-
-        centers
-    }
-
-    pub fn normals(&self) -> Array2<f64> {
-        self.normals.clone()
-    }
-
-    pub fn edge(&self, edge: usize) -> (Array1<f64>, Array1<f64>) {
-        let edge = self.edges.index_axis(Axis(0), edge);
-        let v0 = self.vertices.index_axis(Axis(0), edge[0]);
-        let v1 = self.vertices.index_axis(Axis(0), edge[1]);
-        // concatenate(
-        //     Axis(0),
-        //     &[
-        //         v0.to_shape((1, 2)).unwrap().view(),
-        //         v1.to_shape((1, 2)).unwrap().view(),
-        //     ],
-        // )
-        // .unwrap()
-        (v0.to_owned(), v1.to_owned())
-    }
-}
-
-#[pymethods]
-impl Region {
-    #[new]
-    pub fn new<'py>(
-        vertices: PyReadonlyArray2<'py, f64>,
-        edges: PyReadonlyArray2<'py, usize>,
-    ) -> Region {
-        assert_eq!(vertices.shape(), edges.shape());
-
-        let vertices = vertices.to_owned_array();
-        let edges = edges.to_owned_array();
-
-        let mut normals = Array2::<f64>::zeros((vertices.shape()[0], 2));
-        let mut lengths = Array1::<f64>::zeros((vertices.shape()[0],));
-
-        for (i, edge) in edges.outer_iter().enumerate() {
-            let v0 = vertices.index_axis(Axis(0), edge[0]);
-            let v1 = vertices.index_axis(Axis(0), edge[1]);
-
-            let (n, l) = normal_2d(v1, v0);
-            normals.slice_mut(s![i, ..]).assign(&n);
-            lengths[i] = l;
-        }
-
-        Region {
-            vertices,
-            edges,
-            normals,
-            lengths,
-        }
-    }
-
-    // #[pyo3(name = "edge")]
-    // pub fn edge_py<'py>(
-    //     &self,
-    //     py: Python<'py>,
-    //     edge: usize,
-    // ) -> Bound<'py, (PyArray1<f64>, PyArray1<f64>)> {
-    //     let (qa, qb) = self.edge(edge);
-    //     PyTuple::(qa.to_pyarray(py), qb.to_pyarray(py))
-    // }
-
-    pub fn edges<'py>(&self, py: Python<'py>) -> Bound<'py, PyArray3<f64>> {
-        let mut edges = Array3::zeros((self.len(), 2, 2));
-
-        for i in 0..self.len() {
-            let (qa, qb) = self.edge(i);
-            edges.slice_mut(s![i, 0, ..]).assign(&qa);
-            edges.slice_mut(s![i, 1, ..]).assign(&qb);
-        }
-
-        edges.to_pyarray(py)
-    }
-
-    pub fn vertices<'py>(&self, py: Python<'py>) -> Bound<'py, PyArray2<f64>> {
-        self.vertices.to_pyarray(py)
-    }
-
-    #[pyo3(name = "centers")]
-    pub fn centers_py<'py>(&self, py: Python<'py>) -> Bound<'py, PyArray2<f64>> {
-        self.centers().to_pyarray(py)
-    }
-
-    #[pyo3(name = "normals")]
-    pub fn normals_py<'py>(&self, py: Python<'py>) -> Bound<'py, PyArray2<f64>> {
-        self.normals().to_pyarray(py)
-    }
-
-    pub fn len(&self) -> usize {
-        self.edges.shape()[0]
-    }
-}
 
 #[pyclass]
 #[derive(Debug, Clone)]
@@ -201,5 +86,87 @@ impl Solver {
         }
 
         (A, B)
+    }
+
+    pub fn solve_boundary(
+        self: Arc<Self>,
+        orientation: Orientation,
+        k: f32,
+        celerity: f32,
+        boundary_condition: BoundaryCondition,
+        boundary_incidence: BoundaryIncidence,
+        mu: Option<Complex64>,
+    ) -> BoundarySolution {
+        unimplemented!()
+    }
+}
+
+#[pyclass]
+pub struct BoundarySolution {
+    solver: Arc<Solver>,
+    k: f32,
+    celerity: f32,
+    orientation: Orientation,
+    boundary_condition: BoundaryCondition,
+
+    /// Phi at boundary elements.
+    phis: Array1<Complex64>,
+
+    /// Normal velocity at boundary elements.
+    velocities: Array1<Complex64>,
+}
+
+impl BoundarySolution {
+    pub fn new(
+        solver: Arc<Solver>,
+        orientation: Orientation,
+        bc: BoundaryCondition,
+        k: f32,
+        celerity: f32,
+        phis: Array1<Complex64>,
+        velocities: Array1<Complex64>,
+    ) -> BoundarySolution {
+        assert_eq!(phis.len(), velocities.len());
+
+        BoundarySolution {
+            solver,
+            orientation,
+            boundary_condition: bc,
+            k,
+            celerity,
+            phis,
+            velocities,
+        }
+    }
+
+    /// $\eta$ at boundary elements.
+    pub fn eta(&self) -> Array1<Complex64> {
+        unimplemented!()
+    }
+
+    pub fn solve_samples(
+        self: Arc<BoundarySolution>,
+        incident_phi: Array1<Complex64>,
+        points: Array2<f64>,
+    ) -> SampleSolution {
+        unimplemented!()
+    }
+}
+
+#[pymethods]
+impl BoundarySolution {}
+
+#[pyclass]
+pub struct SampleSolution {
+    boundary_solution: Arc<BoundarySolution>,
+    phis: Array1<Complex64>,
+}
+
+impl SampleSolution {
+    pub fn new(bs: Arc<BoundarySolution>, phis: Array1<Complex64>) -> SampleSolution {
+        SampleSolution {
+            boundary_solution: bs,
+            phis,
+        }
     }
 }

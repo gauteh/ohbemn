@@ -5,6 +5,7 @@ use pyo3::prelude::*;
 pub mod geometry;
 pub mod integrators;
 pub mod solver;
+pub mod boundary;
 
 pub type A2<'a> = ArrayView<'a, f64, Dim<[usize; 1]>>;
 pub type A2N<'a> = ArrayView<'a, f64, Dim<[usize; 2]>>;
