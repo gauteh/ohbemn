@@ -15,5 +15,5 @@ ndarray = { version="0.15.6", features = ["blas"]}
 blas-src = { version = "0.10.0", default-features = false, features = ["netlib"] }
 ndarray-linalg = "0.16.0"
 num = "0.4.3"
-numpy = "0.23.0"
+numpy = { version = "0.23.0" }
 pyo3 = { version = "0.23.1", features = [ "num-complex" ] }

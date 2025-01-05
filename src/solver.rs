@@ -10,7 +10,8 @@ use ndarray_linalg::{Norm, Solve};
 use num::{complex::ComplexFloat, Complex};
 use numpy::{
     Complex64, IntoPyArray, PyArray, PyArray1, PyArray2, PyArray3, PyArrayDyn, PyArrayMethods,
-    PyReadonlyArray2, PyReadonlyArrayDyn, PyUntypedArrayMethods, ToPyArray,
+    PyReadonlyArray1, PyReadonlyArray2, PyReadonlyArrayDyn, PyReadwriteArray1,
+    PyUntypedArrayMethods, ToPyArray,
 };
 use pyo3::prelude::*;
 
@@ -181,7 +182,6 @@ fn solve_linear_equation(
     f: &Array1<Complex64>,
 ) -> (Array1<Complex64>, Array1<Complex64>) {
     let mut x = Array1::<Complex64>::zeros(c.len());
-    let mut y = Array1::<Complex64>::zeros(c.len());
 
     let N = c.len();
     let gamma = B.norm_max() / A.norm_max();
@@ -208,7 +208,7 @@ fn solve_linear_equation(
     }
 
     A = A - B;
-    y = A.solve_into(c).unwrap();
+    let mut y = A.solve_into(c).unwrap();
 
     for i in 0..N {
         if swapXY[i] {
@@ -265,16 +265,9 @@ impl BoundarySolution {
             velocities,
         }
     }
+}
 
-    /// $\eta$ at boundary elements.
-    pub fn eta(&self) -> Array1<Complex64> {
-        unimplemented!()
-    }
-
-    pub fn len(&self) -> usize {
-        self.phis.len()
-    }
-
+impl BoundarySolution {
     pub fn solve_samples(
         &self,
         incident_phis: Array1<Complex64>,
@@ -288,7 +281,40 @@ impl BoundarySolution {
 }
 
 #[pymethods]
-impl BoundarySolution {}
+impl BoundarySolution {
+    pub fn len(&self) -> usize {
+        self.phis.len()
+    }
+
+    #[pyo3(name = "solve_samples")]
+    pub fn solve_samples_py<'py>(
+        &self,
+        incident_phis: PyReadonlyArray1<'py, Complex<f64>>,
+        points: PyReadonlyArray2<'py, f64>,
+    ) -> SampleSolution {
+        println!("{:?}", incident_phis);
+        let incident_phis = incident_phis.to_owned_array();
+        let points = points.to_owned_array();
+        self.solve_samples(incident_phis, points)
+    }
+
+    #[getter]
+    pub fn get_phis<'py>(this: Bound<'py, Self>) -> Bound<'py, PyArray1<Complex64>> {
+        let array = &this.borrow().phis;
+        unsafe { PyArray1::borrow_from_array(array, this.into_any()) }
+    }
+
+    #[getter]
+    pub fn get_velocities<'py>(this: Bound<'py, Self>) -> Bound<'py, PyArray1<Complex64>> {
+        let array = &this.borrow().velocities;
+        unsafe { PyArray1::borrow_from_array(array, this.into_any()) }
+    }
+
+    // /// $\eta$ at boundary elements.
+    // pub fn eta(&self) -> Array1<Complex64> {
+    //     unimplemented!()
+    // }
+}
 
 #[pyclass]
 pub struct SampleSolution {
@@ -303,4 +329,19 @@ impl SampleSolution {
             phis,
         }
     }
+}
+
+#[pymethods]
+impl SampleSolution {
+    #[getter]
+    pub fn get_phis<'py>(this: Bound<'py, Self>) -> Bound<'py, PyArray1<Complex64>> {
+        let array = &this.borrow().phis;
+        unsafe { PyArray1::borrow_from_array(array, this.into_any()) }
+    }
+
+    // #[getter]
+    // pub fn get_velocities<'py>(this: Bound<'py, Self>) -> Bound<'py, PyArray1<Complex64>> {
+    //     let array = &this.borrow().velocities;
+    //     unsafe { PyArray1::borrow_from_array(array, this.into_any()) }
+    // }
 }
