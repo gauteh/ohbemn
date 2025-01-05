@@ -224,6 +224,7 @@ pub fn l_2d_py<'py>(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use numpy::array;
 
     #[test]
     fn test_quad_node_weights() {
@@ -272,5 +273,24 @@ mod tests {
             h
         });
         dbg!(r);
+
+        let qa = array![0.0, 0.0];
+        let qb = array![1.0, 1.0];
+
+        let r = complex_quad_2d(&qa.view(), &qb.view(), |q: A2| Complex::new(1., 0.));
+        approx::assert_abs_diff_eq!(r, Complex::new(2.0_f64.sqrt(), 0.0), epsilon = 0.0001);
+    }
+
+    #[test]
+    fn test_l2d() {
+        let a = array![0.5, 0.00];
+        let b = array![0.0, 0.25];
+        let p_off = array![1.0, 2.0];
+
+        let gld = Complex::new(-0.38848700688676e-2, 0.18666063352484e-1);
+        let k = 16.0;
+        // p_on_element = False
+        let r = l_2d(k, p_off.view(), a.view(), b.view(), false);
+        approx::assert_abs_diff_eq!(r, gld, epsilon = 1e-6);
     }
 }
