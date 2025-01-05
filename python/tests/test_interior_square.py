@@ -38,6 +38,7 @@ def test_ohpy_solve_boundary_rectangle_neumann(benchmark):
                                   bi)
     print(boundary_solution)
 
+
 def test_ohrs_solve_boundary_rectangle_neumann(benchmark):
     # https://github.com/lzhw1991/AcousticBEM/blob/master/Jupyter/Rectangular%20Interior%20Helmholtz%20Problems.ipynb
     f = 1 / 5.  # [Hz]
@@ -46,7 +47,9 @@ def test_ohrs_solve_boundary_rectangle_neumann(benchmark):
     c, cg, k = ohpy.wave.wavec_interm(T, d)
     print("wave length:", c / f)
 
-    region = ohpy.Region.rectangle(100, 100, 10, 10)
+    region = ohpy.Region.rectangle(100, 100, 10, 10)  # XXX
+    region = ohrs.Region(region.vertices.astype(np.float64),
+                         region._edges.astype(np.uint64))
     print("elements:", region.len())
 
     # Specifying boundary conditions
@@ -66,21 +69,23 @@ def test_ohrs_solve_boundary_rectangle_neumann(benchmark):
     bi.v.fill(0.0)  # no incoming velocity on boundary
 
     # Ready to solve!
-    solver = ohpy.Solver(region)
-    boundary_solution = benchmark(solver.solve_boundary, 'interior', k, c, bc,
-                                  bi)
+    solver = ohrs.Solver(region)
+    boundary_solution = benchmark(solver.solve_boundary, ohrs.Orientation.Interior, k, c,
+                                              bc, bi)
     print(boundary_solution)
+
 
 def test_ohrs_acousticbem_interior_rectangle():
     # https://github.com/lzhw1991/AcousticBEM/blob/master/Jupyter/Rectangular%20Interior%20Helmholtz%20Problems.ipynb
     f = 1 / 5.  # [Hz]
     T = 1 / f
     d = 40.  # [m]
-    c, cg, k = ohpy.wave.wavec_interm(T, d) # XXX
+    c, cg, k = ohpy.wave.wavec_interm(T, d)  # XXX
     print("wave length:", c / f)
 
-    region = ohpy.Region.rectangle(100, 100, 10, 10) # XXX
-    region = ohrs.Region(region.vertices.astype(np.float64), region._edges.astype(np.uint64))
+    region = ohpy.Region.rectangle(100, 100, 10, 10)  # XXX
+    region = ohrs.Region(region.vertices.astype(np.float64),
+                         region._edges.astype(np.uint64))
     print("elements:", region.len())
 
     # Specifying boundary conditions
@@ -112,7 +117,8 @@ def test_ohrs_acousticbem_interior_rectangle():
     # Ready to solve!
 
     solver = ohrs.Solver(region)
-    boundary_solution = solver.solve_boundary(ohrs.Orientation.Interior, k, c, bc, bi)
+    boundary_solution = solver.solve_boundary(ohrs.Orientation.Interior, k, c,
+                                              bc, bi)
 
     # Now we can solve the field at the interior points:
     interior = boundary_solution.solve_samples(i_incident, ip)
