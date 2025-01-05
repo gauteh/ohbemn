@@ -16,7 +16,7 @@ use pyo3::prelude::*;
 
 use crate::boundary::*;
 use crate::geometry::normal_2d;
-use crate::integrators as int;
+use crate::integrators::{self as int, l_2d};
 use crate::{Orientation, A2, A2N};
 
 #[pyclass]
@@ -131,6 +131,45 @@ impl Solver {
 
         (A, B)
     }
+
+    pub fn solve_samples(
+        &self,
+        solution: &BoundarySolution,
+        incident_phis: Array1<Complex64>,
+        points: Array2<f64>,
+        orientation: Orientation,
+    ) -> Array1<Complex64> {
+        assert_eq!(incident_phis.len(), points.shape()[0]);
+
+        let N = incident_phis.len();
+
+        let mut result = Array1::<Complex64>::zeros(N);
+
+        for i in 0..N {
+            let p = points.index_axis(Axis(0), i);
+            let mut sum = incident_phis[i];
+
+            for j in 0..solution.len() {
+                let (qa, qb) = self.region.edge(j);
+
+                let l = int::l_2d(solution.k, p, qa.view(), qb.view(), false);
+                let m = int::m_2d(solution.k, p, qa.view(), qb.view(), false);
+
+                match orientation {
+                    Orientation::Interior => {
+                        sum += l * solution.velocities[j] - m * solution.phis[j];
+                    }
+                    Orientation::Exterior => {
+                        sum -= l * solution.velocities[j] - m * solution.phis[j];
+                    }
+                }
+            }
+
+            result[i] = sum;
+        }
+
+        result
+    }
 }
 
 fn solve_linear_equation(
@@ -229,6 +268,10 @@ impl BoundarySolution {
     /// $\eta$ at boundary elements.
     pub fn eta(&self) -> Array1<Complex64> {
         unimplemented!()
+    }
+
+    pub fn len(&self) -> usize {
+        self.phis.len()
     }
 
     pub fn solve_samples(
