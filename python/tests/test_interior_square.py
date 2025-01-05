@@ -38,7 +38,7 @@ def test_ohpy_solve_boundary_rectangle_neumann(benchmark):
                                   bi)
     print(boundary_solution)
 
-def test_ohpy_solve_boundary_rectangle_neumann(benchmark):
+def test_ohrs_solve_boundary_rectangle_neumann(benchmark):
     # https://github.com/lzhw1991/AcousticBEM/blob/master/Jupyter/Rectangular%20Interior%20Helmholtz%20Problems.ipynb
     f = 1 / 5.  # [Hz]
     T = 1 / f
@@ -112,7 +112,7 @@ def test_ohrs_acousticbem_interior_rectangle():
     # Ready to solve!
 
     solver = ohrs.Solver(region)
-    boundary_solution = solver.solve_boundary('interior', k, c, bc, bi)
+    boundary_solution = solver.solve_boundary(ohrs.Orientation.Interior, k, c, bc, bi)
 
     # Now we can solve the field at the interior points:
     interior = boundary_solution.solve_samples(i_incident, ip)

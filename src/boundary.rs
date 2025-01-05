@@ -218,6 +218,7 @@ impl BoundaryCondition {
 }
 
 #[pyclass]
+#[derive(Clone, Debug)]
 pub struct BoundaryIncidence {
     pub phi: Array1<Complex64>,
     pub v: Array1<Complex64>,

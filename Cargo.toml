@@ -11,7 +11,8 @@ crate-type = ["cdylib"]
 [dependencies]
 complex-bessel-rs = "1.2.1"
 gauss-quad = "0.2.2"
-ndarray = "0.15.6"
+ndarray = { version="0.15.6", features = ["blas"]}
+blas-src = { version = "0.10.0", default-features = false, features = ["netlib"] }
 ndarray-linalg = "0.16.0"
 num = "0.4.3"
 numpy = "0.23.0"

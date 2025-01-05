@@ -32,6 +32,48 @@ impl Solver {
         Solver { region }
     }
 
+    pub fn solve_boundary(
+        &self,
+        orientation: Orientation,
+        k: f64,
+        celerity: f64,
+        boundary_condition: BoundaryCondition,
+        boundary_incidence: BoundaryIncidence,
+        mu: Option<Complex64>,
+    ) -> BoundarySolution {
+        let mu = mu.unwrap_or(Complex64::new(0., 1.) / Complex64::new(k + 1., 0.));
+
+        assert_eq!(boundary_condition.len(), self.len());
+        assert_eq!(boundary_incidence.len(), self.len());
+
+        let (A, B) = self.compute_boundary_matrices(k, mu, orientation);
+
+        let c = boundary_incidence.phi + mu * boundary_incidence.v;
+        let c = match orientation {
+            Orientation::Interior => c,
+            Orientation::Exterior => -c,
+        };
+
+        let (phi, v) = solve_linear_equation(
+            A,
+            B,
+            c,
+            &boundary_condition.alpha,
+            &boundary_condition.beta,
+            &boundary_condition.f,
+        );
+
+        BoundarySolution::new(
+            self.clone(),
+            orientation,
+            boundary_condition,
+            k,
+            celerity,
+            phi,
+            v,
+        )
+    }
+
     pub fn len(&self) -> usize {
         self.region.len()
     }
@@ -88,40 +130,6 @@ impl Solver {
         }
 
         (A, B)
-    }
-
-    pub fn solve_boundary(
-        self: Arc<Self>,
-        orientation: Orientation,
-        k: f64,
-        celerity: f64,
-        boundary_condition: BoundaryCondition,
-        boundary_incidence: BoundaryIncidence,
-        mu: Option<Complex64>,
-    ) -> BoundarySolution {
-        let mu = mu.unwrap_or(Complex64::new(0., 1.) / Complex64::new(k + 1., 0.));
-
-        assert_eq!(boundary_condition.len(), self.len());
-        assert_eq!(boundary_incidence.len(), self.len());
-
-        let (A, B) = self.compute_boundary_matrices(k, mu, orientation);
-
-        let c = boundary_incidence.phi + mu * boundary_incidence.v;
-        let c = match orientation {
-            Orientation::Interior => c,
-            Orientation::Exterior => -c,
-        };
-
-        let (phi, v) = solve_linear_equation(
-            A,
-            B,
-            c,
-            &boundary_condition.alpha,
-            &boundary_condition.beta,
-            &boundary_condition.f,
-        );
-
-        BoundarySolution::new(self, orientation, boundary_condition, k, celerity, phi, v)
     }
 }
 
@@ -182,7 +190,7 @@ fn solve_linear_equation(
 
 #[pyclass]
 pub struct BoundarySolution {
-    solver: Arc<Solver>,
+    solver: Solver,
     k: f64,
     celerity: f64,
     orientation: Orientation,
@@ -197,7 +205,7 @@ pub struct BoundarySolution {
 
 impl BoundarySolution {
     pub fn new(
-        solver: Arc<Solver>,
+        solver: Solver,
         orientation: Orientation,
         bc: BoundaryCondition,
         k: f64,
