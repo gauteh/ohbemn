@@ -228,6 +228,7 @@ fn solve_linear_equation(
 }
 
 #[pyclass]
+#[derive(Clone)]
 pub struct BoundarySolution {
     solver: Solver,
     k: f64,
@@ -275,11 +276,14 @@ impl BoundarySolution {
     }
 
     pub fn solve_samples(
-        self: Arc<BoundarySolution>,
-        incident_phi: Array1<Complex64>,
+        &self,
+        incident_phis: Array1<Complex64>,
         points: Array2<f64>,
     ) -> SampleSolution {
-        unimplemented!()
+        let phis = self
+            .solver
+            .solve_samples(&self, incident_phis, points, self.orientation);
+        SampleSolution::new(self.clone(), phis)
     }
 }
 
@@ -288,12 +292,12 @@ impl BoundarySolution {}
 
 #[pyclass]
 pub struct SampleSolution {
-    boundary_solution: Arc<BoundarySolution>,
+    boundary_solution: BoundarySolution,
     phis: Array1<Complex64>,
 }
 
 impl SampleSolution {
-    pub fn new(bs: Arc<BoundarySolution>, phis: Array1<Complex64>) -> SampleSolution {
+    pub fn new(bs: BoundarySolution, phis: Array1<Complex64>) -> SampleSolution {
         SampleSolution {
             boundary_solution: bs,
             phis,
