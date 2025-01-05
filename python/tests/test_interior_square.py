@@ -80,7 +80,7 @@ def test_ohrs_acousticbem_interior_rectangle():
     print("wave length:", c / f)
 
     region = ohpy.Region.rectangle(100, 100, 10, 10) # XXX
-    region = ohrs.Region(region.vertices.astype(np.float64), region._edges.astype(np.float64))
+    region = ohrs.Region(region.vertices.astype(np.float64), region._edges.astype(np.uint64))
     print("elements:", region.len())
 
     # Specifying boundary conditions

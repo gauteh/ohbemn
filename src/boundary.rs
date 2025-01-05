@@ -194,6 +194,24 @@ impl BoundaryCondition {
         BoundaryCondition { alpha, beta, f }
     }
 
+    #[getter]
+    pub fn get_alpha<'py>(this: Bound<'py, Self>) -> Bound<'py, PyArray1<Complex64>> {
+        let array = &this.borrow().alpha;
+        unsafe { PyArray1::borrow_from_array(array, this.into_any()) }
+    }
+
+    #[getter]
+    pub fn get_beta<'py>(this: Bound<'py, Self>) -> Bound<'py, PyArray1<Complex64>> {
+        let array = &this.borrow().beta;
+        unsafe { PyArray1::borrow_from_array(array, this.into_any()) }
+    }
+
+    #[getter]
+    pub fn get_f<'py>(this: Bound<'py, Self>) -> Bound<'py, PyArray1<Complex64>> {
+        let array = &this.borrow().f;
+        unsafe { PyArray1::borrow_from_array(array, this.into_any()) }
+    }
+
     pub fn len(&self) -> usize {
         self.f.len()
     }
@@ -213,6 +231,18 @@ impl BoundaryIncidence {
         let v = Array1::zeros(size);
 
         BoundaryIncidence { phi, v }
+    }
+
+    #[getter]
+    pub fn get_phi<'py>(this: Bound<'py, Self>) -> Bound<'py, PyArray1<Complex64>> {
+        let array = &this.borrow().phi;
+        unsafe { PyArray1::borrow_from_array(array, this.into_any()) }
+    }
+
+    #[getter]
+    pub fn get_v<'py>(this: Bound<'py, Self>) -> Bound<'py, PyArray1<Complex64>> {
+        let array = &this.borrow().v;
+        unsafe { PyArray1::borrow_from_array(array, this.into_any()) }
     }
 
     pub fn len(&self) -> usize {
