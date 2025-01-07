@@ -2,10 +2,10 @@ use std::f64::consts::PI;
 use std::sync::LazyLock;
 
 use gauss_quad::GaussLegendre;
-use ndarray::{Array, Array1, ArrayView, Dim};
-use ndarray_linalg::{normalize, Norm, NormalizeAxis as Axis};
-use num::Complex;
-use numpy::{Complex64, IntoPyArray, PyArray, PyArrayDyn, PyArrayMethods, PyReadonlyArrayDyn};
+use ndarray::Array1;
+use ndarray_linalg::Norm;
+use num::{complex::c64, Complex};
+use numpy::{Complex64, PyReadonlyArrayDyn};
 use pyo3::prelude::*;
 
 use crate::geometry::normal_2d;
@@ -69,14 +69,14 @@ pub fn l_2d(k: f64, p: A2, qa: A2, qb: A2, p_on_element: bool) -> Complex<f64> {
     if p_on_element {
         let int = |x: A2| -> Complex<f64> {
             let R = (p.to_owned() - x).norm_l2();
-            return 0.5 / PI * f64::log2(R)
+            return 0.5 / PI * f64::ln(R)
                 + Complex::new(0.0, 0.25) * hankel1(0.0, Complex::new(k, 0.0) * R);
         };
 
         let ra = (&p - &qa).norm_l2();
         let rb = (&p - &qb).norm_l2();
         let re = (&qb - &qa).norm_l2();
-        let l = 0.5 / PI * (re - (ra * f64::log2(ra) + rb * f64::log2(rb)));
+        let l = 0.5 / PI * (re - (ra * f64::ln(ra) + rb * f64::ln(rb)));
 
         // complex quad
         complex_quad_2d(&qa, &p, int) + complex_quad_2d(&p, &qb, int) + l
@@ -146,7 +146,6 @@ pub fn mt_2d(k: f64, p: A2, qa: A2, qb: A2, p_on_element: bool) -> Complex<f64> 
 pub fn n_2d(k: f64, p: A2, vecp: A2, qa: A2, qb: A2, p_on_element: bool) -> Complex<f64> {
     assert!(k > 0.0, "wavenumber==0 not supported");
 
-    let qab = qb.to_owned() - qa;
     let (vecq, _) = normal_2d(qa, qb);
 
     if p_on_element {
@@ -170,7 +169,7 @@ pub fn n_2d(k: f64, p: A2, vecp: A2, qa: A2, qb: A2, p_on_element: bool) -> Comp
                 - Complex::new(0., 0.25) * ksq * hankel1(0., Complex::new(k, 0.) * R)
                 - 1.0 / (PI * R2);
 
-            let c3 = -0.25 * ksq * R.log2() / PI;
+            let c3 = -0.25 * ksq * R.ln() / PI;
 
             return c1 * dpnu + c2 * drdudrdn + c3;
         };
@@ -180,7 +179,7 @@ pub fn n_2d(k: f64, p: A2, vecp: A2, qa: A2, qb: A2, p_on_element: bool) -> Comp
         let ra = (&p - &qa).norm_l2();
         let rb = (&p - &qb).norm_l2();
         let re = (&qb - &qa).norm_l2();
-        let l_0 = 0.5 / PI * (re - (ra * f64::log2(ra) + rb * f64::log2(rb)));
+        let l_0 = 0.5 / PI * (re - (ra * f64::ln(ra) + rb * f64::ln(rb)));
         let l_0 = -0.5 * ksq * l_0;
 
         let i = complex_quad_2d(&qa, &p, int) + complex_quad_2d(&p, &qb, int);
@@ -207,7 +206,6 @@ pub fn n_2d(k: f64, p: A2, vecp: A2, qa: A2, qb: A2, p_on_element: bool) -> Comp
 #[pyfunction]
 #[pyo3(name = "l_2d")]
 pub fn l_2d_py<'py>(
-    py: Python<'py>,
     k: f64,
     p: PyReadonlyArrayDyn<'py, f64>,
     qa: PyReadonlyArrayDyn<'py, f64>,
@@ -225,6 +223,12 @@ pub fn l_2d_py<'py>(
 mod tests {
     use super::*;
     use numpy::array;
+    use std::sync::LazyLock;
+
+    const a: LazyLock<Array1<f64>> = LazyLock::new(|| array![0.5, 0.00]);
+    const b: LazyLock<Array1<f64>> = LazyLock::new(|| array![0.0, 0.25]);
+    const p_off: LazyLock<Array1<f64>> = LazyLock::new(|| array![1.0, 2.0]);
+    const p_on: LazyLock<Array1<f64>> = LazyLock::new(|| (&*a + &*b) / 2.0); // center of mass for pOnElement
 
     #[test]
     fn test_quad_node_weights() {
@@ -277,20 +281,31 @@ mod tests {
         let qa = array![0.0, 0.0];
         let qb = array![1.0, 1.0];
 
-        let r = complex_quad_2d(&qa.view(), &qb.view(), |q: A2| Complex::new(1., 0.));
+        let r = complex_quad_2d(&qa.view(), &qb.view(), |_q: A2| Complex::new(1., 0.));
         approx::assert_abs_diff_eq!(r, Complex::new(2.0_f64.sqrt(), 0.0), epsilon = 0.0001);
     }
 
     #[test]
-    fn test_l2d() {
-        let a = array![0.5, 0.00];
-        let b = array![0.0, 0.25];
-        let p_off = array![1.0, 2.0];
-
+    fn test_l_2d() {
         let gld = Complex::new(-0.38848700688676e-2, 0.18666063352484e-1);
         let k = 16.0;
         // p_on_element = False
         let r = l_2d(k, p_off.view(), a.view(), b.view(), false);
+        approx::assert_abs_diff_eq!(r, gld, epsilon = 1e-6);
+
+        let gld = c64(-0.10438221373809e-1, 0.26590088538927e-1);
+        let k = 16.0;
+
+        let r = l_2d(k, p_on.view(), a.view(), b.view(), true);
+        approx::assert_abs_diff_eq!(r, gld, epsilon = 1e-6);
+    }
+
+    #[test]
+    fn test_m_2d() {
+        let gld = c64(-0.295962840153050, -0.65862830497453e-1);
+        let k = 16.0;
+
+        let r = m_2d(k, p_off.view(), a.view(), b.view(), false);
         approx::assert_abs_diff_eq!(r, gld, epsilon = 1e-6);
     }
 }

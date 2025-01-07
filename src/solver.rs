@@ -1,24 +1,14 @@
-use std::f64::consts::PI;
 use std::mem::swap;
-use std::sync::Arc;
 
-use ndarray::{
-    array, concatenate, prelude::*, s, Array, Array1, Array2, Array3, ArrayView, ArrayView2, Axis,
-    Dim,
-};
+use ndarray::{Array1, Array2, Axis};
 use ndarray_linalg::{Norm, Solve};
 use num::{complex::ComplexFloat, Complex};
-use numpy::{
-    Complex64, IntoPyArray, PyArray, PyArray1, PyArray2, PyArray3, PyArrayDyn, PyArrayMethods,
-    PyReadonlyArray1, PyReadonlyArray2, PyReadonlyArrayDyn, PyReadwriteArray1,
-    PyUntypedArrayMethods, ToPyArray,
-};
+use numpy::{Complex64, PyArray1, PyArrayMethods, PyReadonlyArray1, PyReadonlyArray2};
 use pyo3::prelude::*;
 
 use crate::boundary::*;
-use crate::geometry::normal_2d;
-use crate::integrators::{self as int, l_2d};
-use crate::{Orientation, A2, A2N};
+use crate::integrators as int;
+use crate::Orientation;
 
 #[pyclass]
 #[derive(Debug, Clone)]

@@ -50,3 +50,15 @@ def test_hankel1():
     for j in np.arange(0, 10, 1):
         h = hankel1(0, (10. + 0j) * j)
         print(f"{j} = {h}")
+
+def test_l_2d_04():
+        a = np.array([0.5, 0.00], dtype=np.float32)
+        b = np.array([0.0, 0.25], dtype=np.float32)
+        p_off = np.array([1.0, 2.0], dtype=np.float32)
+        p_on = (a + b) / 2.0; # center of mass for pOnElement
+        gld = -.10438221373809E-01+ 0.26590088538927E-01j
+        k = 16.0
+        p_on_element = True
+        r = ohpy.intop.l_2d(k, p_on, a, b, p_on_element)
+        np.testing.assert_almost_equal(r, gld)
+

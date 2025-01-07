@@ -1,19 +1,11 @@
-use std::f64::consts::PI;
-
-use ndarray::{
-    array, concatenate, s, Array, Array1, Array2, Array3, ArrayView, ArrayView2, Axis, Dim,
-};
-use ndarray_linalg::Norm;
-use num::Complex;
+use ndarray::{s, Array1, Array2, Array3, Axis};
 use numpy::{
-    Complex64, IntoPyArray, PyArray, PyArray1, PyArray2, PyArray3, PyArrayDyn, PyArrayMethods,
-    PyReadonlyArray2, PyReadonlyArrayDyn, PyUntypedArrayMethods, ToPyArray,
+    Complex64, PyArray1, PyArray2, PyArray3, PyArrayMethods, PyReadonlyArray2,
+    PyUntypedArrayMethods, ToPyArray,
 };
 use pyo3::prelude::*;
 
 use crate::geometry::normal_2d;
-use crate::integrators as int;
-use crate::{Orientation, A2, A2N};
 
 #[pyclass]
 #[derive(Debug, Clone)]
@@ -21,7 +13,7 @@ pub struct Region {
     edges: Array2<usize>,
     vertices: Array2<f64>,
     normals: Array2<f64>,
-    lengths: Array1<f64>,
+    // lengths: Array1<f64>,
 }
 
 impl Region {
@@ -72,22 +64,22 @@ impl Region {
         let edges = edges.to_owned_array();
 
         let mut normals = Array2::<f64>::zeros((vertices.shape()[0], 2));
-        let mut lengths = Array1::<f64>::zeros((vertices.shape()[0],));
+        // let mut lengths = Array1::<f64>::zeros((vertices.shape()[0],));
 
         for (i, edge) in edges.outer_iter().enumerate() {
             let v0 = vertices.index_axis(Axis(0), edge[0]);
             let v1 = vertices.index_axis(Axis(0), edge[1]);
 
-            let (n, l) = normal_2d(v1, v0);
+            let (n, _l) = normal_2d(v1, v0);
             normals.slice_mut(s![i, ..]).assign(&n);
-            lengths[i] = l;
+            // lengths[i] = l;
         }
 
         Region {
             vertices,
             edges,
             normals,
-            lengths,
+            // lengths,
         }
     }
 
