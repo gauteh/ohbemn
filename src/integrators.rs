@@ -119,10 +119,8 @@ pub fn m_2d(k: f64, p: A2, qa: A2, qb: A2, p_on_element: bool) -> Complex<f64> {
 /// p: point (center of edge)
 /// qa: first vertex of edge
 /// qb: second vertex of edge
-pub fn mt_2d(k: f64, p: A2, qa: A2, qb: A2, p_on_element: bool) -> Complex<f64> {
+pub fn mt_2d(k: f64, p: A2, vecp: A2, qa: A2, qb: A2, p_on_element: bool) -> Complex<f64> {
     assert!(k > 0.0, "wavenumber==0 not supported");
-
-    let (vecq, _) = normal_2d(qa, qb);
 
     if p_on_element {
         Complex::new(0.0, 0.0)
@@ -130,7 +128,7 @@ pub fn mt_2d(k: f64, p: A2, qa: A2, qb: A2, p_on_element: bool) -> Complex<f64> 
         let int = |x: A2| {
             let r = p.to_owned() - x;
             let R = r.norm_l2();
-            return hankel1(1.0, Complex::new(k, 0.) * R) * r.dot(&vecq) / R;
+            return hankel1(1.0, Complex::new(k, 0.) * R) * r.dot(&vecp) / R;
         };
 
         Complex::new(0., -0.25) * k * complex_quad_2d(&qa, &qb, int)
@@ -161,12 +159,13 @@ pub fn n_2d(k: f64, p: A2, vecp: A2, qa: A2, qb: A2, p_on_element: bool) -> Comp
 
             let drdudrdn = -r.dot(&vecq) * r.dot(&vecp) / R2;
             let dpnu = vecp.dot(&vecq);
-            let hkr = hankel1(1., Complex::new(k, 0.) * R);
 
-            let c1 = Complex::new(0., 0.25) * k / R * hkr - 0.5 / (PI * R2);
+            let hkr = hankel1(1., c64(k, 0.) * R);
 
-            let c2 = Complex::new(0., 0.5) * k / R * hkr
-                - Complex::new(0., 0.25) * ksq * hankel1(0., Complex::new(k, 0.) * R)
+            let c1 = c64(0., 0.25) * k / R * hkr - 0.5 / (PI * R2);
+
+            let c2 = c64(0., 0.5) * k / R * hkr
+                - c64(0., 0.25) * ksq * hankel1(0., c64(k, 0.) * R)
                 - 1.0 / (PI * R2);
 
             let c3 = -0.25 * ksq * R.ln() / PI;
@@ -180,6 +179,7 @@ pub fn n_2d(k: f64, p: A2, vecp: A2, qa: A2, qb: A2, p_on_element: bool) -> Comp
         let rb = (&p - &qb).norm_l2();
         let re = (&qb - &qa).norm_l2();
         let l_0 = 0.5 / PI * (re - (ra * f64::ln(ra) + rb * f64::ln(rb)));
+
         let l_0 = -0.5 * ksq * l_0;
 
         let i = complex_quad_2d(&qa, &p, int) + complex_quad_2d(&p, &qb, int);
@@ -191,15 +191,15 @@ pub fn n_2d(k: f64, p: A2, vecp: A2, qa: A2, qb: A2, p_on_element: bool) -> Comp
         let int = |x: A2| {
             let r = p.to_owned() - x;
             let R2 = r.dot(&r);
-            let drdudrdn = -r.dot(&vecq) * r.dot(&vecp) / R2;
+            let drdudrdn = -r.dot(&vecq) * r.dot(&vecp) / r.dot(&r);
             let R = r.norm_l2();
 
-            let k = Complex::new(k, 0.);
+            let k = c64(k, 0.);
             return hankel1(1., k * R) / R * (un + 2. * drdudrdn)
                 - k * hankel1(0., k * R) * drdudrdn;
         };
 
-        return Complex::new(0., 0.25) * k * complex_quad_2d(&qa, &qb, int);
+        return c64(0., 0.25) * k * complex_quad_2d(&qa, &qb, int);
     }
 }
 
@@ -229,6 +229,14 @@ mod tests {
     const b: LazyLock<Array1<f64>> = LazyLock::new(|| array![0.0, 0.25]);
     const p_off: LazyLock<Array1<f64>> = LazyLock::new(|| array![1.0, 2.0]);
     const p_on: LazyLock<Array1<f64>> = LazyLock::new(|| (&*a + &*b) / 2.0); // center of mass for pOnElement
+
+    const n_p_off: LazyLock<Array1<f64>> =
+        LazyLock::new(|| array![-0.5_f64.sqrt(), -0.5_f64.sqrt()]);
+    const ab: LazyLock<Array1<f64>> = LazyLock::new(|| (&*a - &*b));
+    const n_p_on: LazyLock<Array1<f64>> = LazyLock::new(|| {
+        let n = array![-ab[1], -ab[0]];
+        n.clone() / n.norm_l2()
+    });
 
     #[test]
     fn test_quad_node_weights() {
@@ -307,5 +315,33 @@ mod tests {
 
         let r = m_2d(k, p_off.view(), a.view(), b.view(), false);
         approx::assert_abs_diff_eq!(r, gld, epsilon = 1e-6);
+
+        let gld = c64(0.00000000000000, 0.00000000000000);
+        let r = m_2d(k, p_on.view(), a.view(), b.view(), true);
+        approx::assert_abs_diff_eq!(r, gld, epsilon = 1e-6);
+    }
+
+    #[test]
+    fn test_mt_2d() {
+        let gld = c64(0.27354006901263, 0.59196279619442e-1);
+        let k = 16.0;
+        let r = mt_2d(k, p_off.view(), n_p_off.view(), a.view(), b.view(), false);
+        approx::assert_abs_diff_eq!(r, gld, epsilon = 1e-6);
+
+        let gld = c64(0.0, 0.0);
+        let r = mt_2d(k, p_on.view(), n_p_on.view(), a.view(), b.view(), true);
+        approx::assert_abs_diff_eq!(r, gld, epsilon = 1e-6);
+    }
+
+    #[test]
+    fn test_n_2d() {
+        let gld = c64(-0.99612499996911e+00, 0.43379540259270e+01);
+        let k = 16.0;
+        let r = n_2d(k, p_off.view(), n_p_off.view(), a.view(), b.view(), false);
+        approx::assert_abs_diff_eq!(r, gld, epsilon = 1e-5);
+
+        let gld = c64(-0.40622369223044e+00, 0.85946767167784e+01);
+        let r = n_2d(k, p_on.view(), n_p_on.view(), a.view(), b.view(), true);
+        approx::assert_abs_diff_eq!(r, gld, epsilon = 1e-5);
     }
 }

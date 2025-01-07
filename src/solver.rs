@@ -92,7 +92,7 @@ impl Solver {
 
                 let l = int::l_2d(k, center, qa.view(), qb.view(), i == j);
                 let m = int::m_2d(k, center, qa.view(), qb.view(), i == j);
-                let mt = int::mt_2d(k, center, qa.view(), qb.view(), i == j);
+                let mt = int::mt_2d(k, center, normal, qa.view(), qb.view(), i == j);
                 let n = int::n_2d(k, center, normal, qa.view(), qb.view(), i == j);
 
                 let a = l + mu * mt;
