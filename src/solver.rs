@@ -335,3 +335,16 @@ impl SampleSolution {
     //     unsafe { PyArray1::borrow_from_array(array, this.into_any()) }
     // }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::f64::consts::PI;
+
+    #[test]
+    fn test_internal_2d_1() {
+        let frequency = 400.0;
+        let k = 2.0 * PI * frequency / 344.0;
+    }
+}
+

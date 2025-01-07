@@ -155,7 +155,7 @@ pub fn n_2d(k: f64, p: A2, vecp: A2, qa: A2, qb: A2, p_on_element: bool) -> Comp
         let int = |x: A2| {
             let r = p.to_owned() - x;
             let R2 = r.dot(&r);
-            let R = R2.sqrt();
+            let R = f64::sqrt(R2);
 
             let drdudrdn = -r.dot(&vecq) * r.dot(&vecp) / R2;
             let dpnu = vecp.dot(&vecq);
@@ -232,9 +232,9 @@ mod tests {
 
     const n_p_off: LazyLock<Array1<f64>> =
         LazyLock::new(|| array![-0.5_f64.sqrt(), -0.5_f64.sqrt()]);
-    const ab: LazyLock<Array1<f64>> = LazyLock::new(|| (&*a - &*b));
+    const ab: LazyLock<Array1<f64>> = LazyLock::new(|| (&*b - &*a));
     const n_p_on: LazyLock<Array1<f64>> = LazyLock::new(|| {
-        let n = array![-ab[1], -ab[0]];
+        let n = array![-ab[1], ab[0]];
         n.clone() / n.norm_l2()
     });
 
