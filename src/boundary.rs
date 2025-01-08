@@ -1,7 +1,6 @@
 use ndarray::{array, s, Array1, Array2, Array3, Axis};
 use numpy::{
-    Complex64, PyArray1, PyArray2, PyArray3, PyArrayMethods, PyReadonlyArray2,
-    PyUntypedArrayMethods, ToPyArray,
+    AllowTypeChange, Complex64, PyArray1, PyArray2, PyArray3, PyArrayLike2, PyArrayMethods, PyReadonlyArray2, PyUntypedArrayMethods, ToPyArray
 };
 use pyo3::prelude::*;
 
@@ -76,8 +75,8 @@ impl Region {
 impl Region {
     #[new]
     pub fn new_py<'py>(
-        vertices: PyReadonlyArray2<'py, f64>,
-        edges: PyReadonlyArray2<'py, usize>,
+        vertices: PyArrayLike2<'py, f64, AllowTypeChange>,
+        edges: PyArrayLike2<'py, usize, AllowTypeChange>,
     ) -> Region {
         assert_eq!(vertices.shape(), edges.shape());
 

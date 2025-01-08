@@ -2,8 +2,9 @@ use std::mem::swap;
 
 use ndarray::{Array1, Array2, Axis};
 use ndarray_linalg::{Norm, Solve};
-use num::{complex::ComplexFloat, Complex, Float};
-use numpy::{Complex64, PyArray1, PyArrayMethods, PyReadonlyArray1, PyReadonlyArray2};
+use num::{complex::ComplexFloat, Complex};
+use numpy::{AllowTypeChange, PyArrayLike1, PyArrayLike2};
+use numpy::{Complex64, PyArray1, PyArrayMethods};
 use pyo3::prelude::*;
 
 use crate::boundary::*;
@@ -137,7 +138,6 @@ impl Solver {
                 let l = int::l_2d(solution.k, p, qa.view(), qb.view(), false);
                 let m = int::m_2d(solution.k, p, qa.view(), qb.view(), false);
 
-
                 match orientation {
                     Orientation::Interior => {
                         sum += l * solution.velocities[j] - m * solution.phis[j];
@@ -204,10 +204,7 @@ fn solve_linear_equation(
 
     for i in 0..N {
         if swapXY[i] {
-            let t = x[i];
-            x[i] = y[i];
-            y[i] = t;
-            // swap(&mut x[i], &mut y[i]);
+            swap(&mut x[i], &mut y[i]);
         }
     }
 
@@ -276,8 +273,8 @@ impl BoundarySolution {
     #[pyo3(name = "solve_samples")]
     pub fn solve_samples_py<'py>(
         &self,
-        incident_phis: PyReadonlyArray1<'py, Complex<f64>>,
-        points: PyReadonlyArray2<'py, f64>,
+        incident_phis: PyArrayLike1<'py, Complex<f64>, AllowTypeChange>,
+        points: PyArrayLike2<'py, f64, AllowTypeChange>,
     ) -> SampleSolution {
         let incident_phis = incident_phis.to_owned_array();
         let points = points.to_owned_array();
