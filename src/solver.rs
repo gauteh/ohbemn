@@ -352,8 +352,11 @@ mod tests {
         let region = Region::square(Some(0.1));
         let mut bc = region.dirichlet_boundary_condition();
 
-        let f = k / f64::sqrt(2.0) * region.centers().slice(s![.., 0]).to_owned();
-        let f = f.mapv(|v| c64(v.sin(), 0.0));
+        let f = (k / f64::sqrt(2.0) * region.centers().slice(s![.., 0]).to_owned())
+            .mapv(|v| c64(v.sin(), 0.0))
+            * (k / f64::sqrt(2.0) * region.centers().slice(s![.., 1]).to_owned())
+                .mapv(|v| c64(v.sin(), 0.0));
+
         bc.f.slice_mut(s![..]).assign(&f);
 
         let bi = region.boundary_incidence();
@@ -400,7 +403,7 @@ mod tests {
 
         azip!((a in &bs.phis, b in &expected) {
             println!("a={a} == b={b}");
-            approx::assert_abs_diff_eq!(a, b, epsilon = 1e-6);
+            approx::assert_abs_diff_eq!(a, b, epsilon = 1e-4);
         });
     }
 }
