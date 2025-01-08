@@ -45,6 +45,7 @@ def test_ohpy_exterior_abem_dirichlet():
     print("\n\nTest Problem 1")
     print("==============\n")
     print(boundary_solution)
+    print(boundary_solution.velocities)
     print(sample_solution)
 
     abem_potential = np.array([
@@ -95,6 +96,7 @@ def test_ohrs_exterior_abem_dirichlet():
     print("\n\nTest Problem 1")
     print("==============\n")
     print(boundary_solution)
+    print(boundary_solution.velocities)
     print(sample_solution)
 
     abem_potential = np.array([

@@ -25,7 +25,7 @@ impl Region {
             let v0 = vertices.index_axis(Axis(0), edge[0]);
             let v1 = vertices.index_axis(Axis(0), edge[1]);
 
-            let (n, _l) = normal_2d(v1, v0);
+            let (n, _l) = normal_2d(v0, v1);
             normals.slice_mut(s![i, ..]).assign(&n);
             // lengths[i] = l;
         }

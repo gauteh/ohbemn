@@ -46,8 +46,8 @@ impl Solver {
         };
 
         let (phi, v) = solve_linear_equation(
-            A,
             B,
+            A,
             c,
             &boundary_condition.alpha,
             &boundary_condition.beta,
@@ -95,27 +95,18 @@ impl Solver {
                 let mt = int::mt_2d(k, center, normal, qa.view(), qb.view(), i == j);
                 let n = int::n_2d(k, center, normal, qa.view(), qb.view(), i == j);
 
-                let a = l + mu * mt;
-                let b = m + mu * n;
-
-                A[[i, j]] = a;
-                B[[i, j]] = b;
+                A[[i, j]] = l + mu * mt;
+                B[[i, j]] = m + mu * n;
             }
 
             match orientation {
                 Orientation::Interior => {
-                    let a = A[[i, i]] - 0.5 * mu;
-                    let b = B[[i, i]] + 0.5;
-
-                    A[[i, i]] = a;
-                    B[[i, i]] = b;
+                    A[[i, i]] = A[[i, i]] - 0.5 * mu;
+                    B[[i, i]] = B[[i, i]] + 0.5;
                 }
                 Orientation::Exterior => {
-                    let a = A[[i, i]] + 0.5 * mu;
-                    let b = B[[i, i]] - 0.5;
-
-                    A[[i, i]] = a;
-                    B[[i, i]] = b;
+                    A[[i, i]] = A[[i, i]] + 0.5 * mu;
+                    B[[i, i]] = B[[i, i]] - 0.5;
                 }
             }
         }
@@ -145,6 +136,7 @@ impl Solver {
 
                 let l = int::l_2d(solution.k, p, qa.view(), qb.view(), false);
                 let m = int::m_2d(solution.k, p, qa.view(), qb.view(), false);
+
 
                 match orientation {
                     Orientation::Interior => {
@@ -178,7 +170,9 @@ fn solve_linear_equation(
 
     let mut swapXY = Array1::<bool>::default(c.len());
     for i in 0..N {
-        if beta[i].abs() >= gamma * alpha[i].abs() {
+        if beta[i].abs() < (gamma * alpha[i].abs()) {
+            swapXY[i] = false;
+        } else {
             swapXY[i] = true;
         }
     }
@@ -198,7 +192,7 @@ fn solve_linear_equation(
     }
 
     A = A - B;
-    let mut y = A.solve_into(c).unwrap();
+    let mut y = A.solve(&c).unwrap();
 
     for i in 0..N {
         if swapXY[i] {
@@ -210,7 +204,10 @@ fn solve_linear_equation(
 
     for i in 0..N {
         if swapXY[i] {
-            swap(&mut x[i], &mut y[i]);
+            let t = x[i];
+            x[i] = y[i];
+            y[i] = t;
+            // swap(&mut x[i], &mut y[i]);
         }
     }
 
@@ -282,7 +279,6 @@ impl BoundarySolution {
         incident_phis: PyReadonlyArray1<'py, Complex<f64>>,
         points: PyReadonlyArray2<'py, f64>,
     ) -> SampleSolution {
-        println!("{:?}", incident_phis);
         let incident_phis = incident_phis.to_owned_array();
         let points = points.to_owned_array();
         self.solve_samples(incident_phis, points)
@@ -402,6 +398,31 @@ mod tests {
         ];
 
         azip!((a in &bs.phis, b in &expected) {
+            println!("a={a} == b={b}");
+            approx::assert_abs_diff_eq!(a, b, epsilon = 1e-4);
+        });
+
+        let points = array![
+            [0.0250, 0.0250],
+            [0.0750, 0.0250],
+            [0.0250, 0.0750],
+            [0.0750, 0.0750],
+            [0.0500, 0.0500],
+        ];
+        let incident = Array1::zeros(points.shape()[0]);
+
+        let samples = bs.solve_samples(incident, points);
+
+        let expected = array![
+            0.1589e-01 + 0.1183e-03 * I,
+            0.4818e-01 + 0.4001e-04 * I,
+            0.4818e-01 + 0.4001e-04 * I,
+            0.1434e00 - 0.2577e-03 * I,
+            0.6499e-01 - 0.1422e-04 * I,
+        ];
+
+        println!("{}", samples.phis);
+        azip!((a in &samples.phis, b in &expected) {
             println!("a={a} == b={b}");
             approx::assert_abs_diff_eq!(a, b, epsilon = 1e-4);
         });
