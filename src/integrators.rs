@@ -1,8 +1,5 @@
 use std::f64::consts::PI;
-use std::sync::LazyLock;
 
-use gauss_quad::GaussLegendre;
-use ndarray::Array1;
 use ndarray_linalg::Norm;
 use num::{complex::c64, Complex};
 use numpy::{Complex64, PyReadonlyArrayDyn};
@@ -10,8 +7,6 @@ use pyo3::prelude::*;
 
 use crate::geometry::normal_2d;
 use crate::A2;
-
-static quad: LazyLock<GaussLegendre> = LazyLock::new(|| GaussLegendre::new(8).unwrap());
 
 // h1_nu from scilab is inaccurate.
 pub fn hankel1(order: f64, z: Complex64) -> Complex64 {
@@ -224,6 +219,7 @@ mod tests {
     use super::*;
     use numpy::array;
     use std::sync::LazyLock;
+    use ndarray::Array1;
 
     const a: LazyLock<Array1<f64>> = LazyLock::new(|| array![0.5, 0.00]);
     const b: LazyLock<Array1<f64>> = LazyLock::new(|| array![0.0, 0.25]);
@@ -238,23 +234,23 @@ mod tests {
         n.clone() / n.norm_l2()
     });
 
-    #[test]
-    fn test_quad_node_weights() {
-        // [
-        //     [0.980144928249, 5.061426814519e-02],
-        //     [0.898333238707, 0.111190517227],
-        //     [0.762766204958, 0.156853322939],
-        //     [0.591717321248, 0.181341891689],
-        //     [0.408282678752, 0.181341891689],
-        //     [0.237233795042, 0.156853322939],
-        //     [0.101666761293, 0.111190517227],
-        //     [1.985507175123e-02, 5.061426814519e-02],
-        // ],
+    // #[test]
+    // fn test_quad_node_weights() {
+    //     // [
+    //     //     [0.980144928249, 5.061426814519e-02],
+    //     //     [0.898333238707, 0.111190517227],
+    //     //     [0.762766204958, 0.156853322939],
+    //     //     [0.591717321248, 0.181341891689],
+    //     //     [0.408282678752, 0.181341891689],
+    //     //     [0.237233795042, 0.156853322939],
+    //     //     [0.101666761293, 0.111190517227],
+    //     //     [1.985507175123e-02, 5.061426814519e-02],
+    //     // ],
 
-        for (n, w) in quad.as_node_weight_pairs() {
-            println!("{n}: {w}");
-        }
-    }
+    //     for (n, w) in quad.as_node_weight_pairs() {
+    //         println!("{n}: {w}");
+    //     }
+    // }
 
     #[test]
     fn test_hankel1() {

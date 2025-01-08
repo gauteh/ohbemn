@@ -10,11 +10,10 @@ crate-type = ["cdylib"]
 
 [dependencies]
 complex-bessel-rs = "1.2.1"
-gauss-quad = "0.2.2"
-ndarray = { version="0.15.6", features = ["blas"]}
+ndarray = { version="0.15", features = ["blas", "approx"]}
 blas-src = { version = "0.10.0", default-features = false, features = ["netlib"] }
 ndarray-linalg = "0.16.0"
-num = "0.4.3"
+num = { version = "0.4.3", features = [ "libm" ] }
 numpy = { version = "0.23.0" }
 pyo3 = { version = "0.23.1", features = [ "num-complex" ] }
 approx = { version = "0.5.1", features = [ "num-complex" ] }

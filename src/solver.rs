@@ -2,7 +2,7 @@ use std::mem::swap;
 
 use ndarray::{Array1, Array2, Axis};
 use ndarray_linalg::{Norm, Solve};
-use num::{complex::ComplexFloat, Complex};
+use num::{complex::ComplexFloat, Complex, Float};
 use numpy::{Complex64, PyArray1, PyArrayMethods, PyReadonlyArray1, PyReadonlyArray2};
 use pyo3::prelude::*;
 
@@ -339,12 +339,68 @@ impl SampleSolution {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use ndarray::{array, azip, s};
+    use num::complex::c64;
     use std::f64::consts::PI;
 
     #[test]
     fn test_internal_2d_1() {
+        let I = Complex64::I;
         let frequency = 400.0;
         let k = 2.0 * PI * frequency / 344.0;
+
+        let region = Region::square(Some(0.1));
+        let mut bc = region.dirichlet_boundary_condition();
+
+        let f = k / f64::sqrt(2.0) * region.centers().slice(s![.., 0]).to_owned();
+        let f = f.mapv(|v| c64(v.sin(), 0.0));
+        bc.f.slice_mut(s![..]).assign(&f);
+
+        let bi = region.boundary_incidence();
+
+        let solver = Solver::new(region);
+        let bs = solver.solve_boundary(Orientation::Interior, k, 344.0, bc, bi, None);
+
+        println!("{}", bs.phis);
+
+        let expected = array![
+            0.0000e00 + 0.0000e00 * I,
+            0.0000e00 + 0.0000e00 * I,
+            0.0000e00 + 0.0000e00 * I,
+            0.0000e00 + 0.0000e00 * I,
+            0.0000e00 + 0.0000e00 * I,
+            0.0000e00 + 0.0000e00 * I,
+            0.0000e00 + 0.0000e00 * I,
+            0.0000e00 + 0.0000e00 * I,
+            0.1595e-01 + 0.0000e00 * I,
+            0.4777e-01 + 0.0000e00 * I,
+            0.7940e-01 + 0.0000e00 * I,
+            0.1107e00 + 0.0000e00 * I,
+            0.1415e00 + 0.0000e00 * I,
+            0.1718e00 + 0.0000e00 * I,
+            0.2013e00 + 0.0000e00 * I,
+            0.2300e00 + 0.0000e00 * I,
+            0.2300e00 + 0.0000e00 * I,
+            0.2013e00 + 0.0000e00 * I,
+            0.1718e00 + 0.0000e00 * I,
+            0.1415e00 + 0.0000e00 * I,
+            0.1107e00 + 0.0000e00 * I,
+            0.7940e-01 + 0.0000e00 * I,
+            0.4777e-01 + 0.0000e00 * I,
+            0.1595e-01 + 0.0000e00 * I,
+            0.0000e00 + 0.0000e00 * I,
+            0.0000e00 + 0.0000e00 * I,
+            0.0000e00 + 0.0000e00 * I,
+            0.0000e00 + 0.0000e00 * I,
+            0.0000e00 + 0.0000e00 * I,
+            0.0000e00 + 0.0000e00 * I,
+            0.0000e00 + 0.0000e00 * I,
+            0.0000e00 + 0.0000e00 * I,
+        ];
+
+        azip!((a in &bs.phis, b in &expected) {
+            println!("a={a} == b={b}");
+            approx::assert_abs_diff_eq!(a, b, epsilon = 1e-6);
+        });
     }
 }
-

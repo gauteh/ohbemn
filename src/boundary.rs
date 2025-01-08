@@ -1,4 +1,4 @@
-use ndarray::{s, Array1, Array2, Array3, Axis};
+use ndarray::{array, s, Array1, Array2, Array3, Axis};
 use numpy::{
     Complex64, PyArray1, PyArray2, PyArray3, PyArrayMethods, PyReadonlyArray2,
     PyUntypedArrayMethods, ToPyArray,
@@ -17,6 +17,27 @@ pub struct Region {
 }
 
 impl Region {
+    pub fn new(vertices: Array2<f64>, edges: Array2<usize>) -> Region {
+        let mut normals = Array2::<f64>::zeros((vertices.shape()[0], 2));
+        // let mut lengths = Array1::<f64>::zeros((vertices.shape()[0],));
+
+        for (i, edge) in edges.outer_iter().enumerate() {
+            let v0 = vertices.index_axis(Axis(0), edge[0]);
+            let v1 = vertices.index_axis(Axis(0), edge[1]);
+
+            let (n, _l) = normal_2d(v1, v0);
+            normals.slice_mut(s![i, ..]).assign(&n);
+            // lengths[i] = l;
+        }
+
+        Region {
+            vertices,
+            edges,
+            normals,
+            // lengths,
+        }
+    }
+
     pub fn centers(&self) -> Array2<f64> {
         let mut centers = Array2::<f64>::zeros((self.len(), 2));
 
@@ -54,7 +75,7 @@ impl Region {
 #[pymethods]
 impl Region {
     #[new]
-    pub fn new<'py>(
+    pub fn new_py<'py>(
         vertices: PyReadonlyArray2<'py, f64>,
         edges: PyReadonlyArray2<'py, usize>,
     ) -> Region {
@@ -63,24 +84,84 @@ impl Region {
         let vertices = vertices.to_owned_array();
         let edges = edges.to_owned_array();
 
-        let mut normals = Array2::<f64>::zeros((vertices.shape()[0], 2));
-        // let mut lengths = Array1::<f64>::zeros((vertices.shape()[0],));
+        Region::new(vertices, edges)
+    }
 
-        for (i, edge) in edges.outer_iter().enumerate() {
-            let v0 = vertices.index_axis(Axis(0), edge[0]);
-            let v1 = vertices.index_axis(Axis(0), edge[1]);
+    #[staticmethod]
+    pub fn square(scale: Option<f64>) -> Region {
+        let vertices = scale.unwrap_or(1.0)
+            * 10.0
+            * array![
+                [0.00, 0.0000],
+                [0.00, 0.0125],
+                [0.00, 0.0250],
+                [0.00, 0.0375],
+                [0.00, 0.0500],
+                [0.00, 0.0625],
+                [0.00, 0.0750],
+                [0.00, 0.0875],
+                [0.0000, 0.10],
+                [0.0125, 0.10],
+                [0.0250, 0.10],
+                [0.0375, 0.10],
+                [0.0500, 0.10],
+                [0.0625, 0.10],
+                [0.0750, 0.10],
+                [0.0875, 0.10],
+                [0.10, 0.1000],
+                [0.10, 0.0875],
+                [0.10, 0.0750],
+                [0.10, 0.0625],
+                [0.10, 0.0500],
+                [0.10, 0.0375],
+                [0.10, 0.0250],
+                [0.10, 0.0125],
+                [0.1000, 0.00],
+                [0.0875, 0.00],
+                [0.0750, 0.00],
+                [0.0625, 0.00],
+                [0.0500, 0.00],
+                [0.0375, 0.00],
+                [0.0250, 0.00],
+                [0.0125, 0.00]
+            ];
 
-            let (n, _l) = normal_2d(v1, v0);
-            normals.slice_mut(s![i, ..]).assign(&n);
-            // lengths[i] = l;
-        }
+        let edges = array![
+            [0, 1],
+            [1, 2],
+            [2, 3],
+            [3, 4],
+            [4, 5],
+            [5, 6],
+            [6, 7],
+            [7, 8],
+            [8, 9],
+            [9, 10],
+            [10, 11],
+            [11, 12],
+            [12, 13],
+            [13, 14],
+            [14, 15],
+            [15, 16],
+            [16, 17],
+            [17, 18],
+            [18, 19],
+            [19, 20],
+            [20, 21],
+            [21, 22],
+            [22, 23],
+            [23, 24],
+            [24, 25],
+            [25, 26],
+            [26, 27],
+            [27, 28],
+            [28, 29],
+            [29, 30],
+            [30, 31],
+            [31, 0]
+        ];
 
-        Region {
-            vertices,
-            edges,
-            normals,
-            // lengths,
-        }
+        Region::new(vertices, edges)
     }
 
     // #[pyo3(name = "edge")]
