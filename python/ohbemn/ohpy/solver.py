@@ -23,7 +23,6 @@ class Solver:
             center = centers[i]
             normal = normals[i]
 
-            print(i, center, normal)
             for j in range(self.len()):
                 qa, qb = self.region.edge(j)
 
@@ -78,7 +77,6 @@ class Solver:
         else:
             assert 'interior' == orientation, "orientation must be either 'interior' or 'exterior'"
 
-        print("c0=", c)
         phi, v = self.solve_linear_equation(B, A, c, boundary_condition.alpha,
                                             boundary_condition.beta,
                                             boundary_condition.f)
@@ -94,10 +92,7 @@ class Solver:
         x = np.empty(c.size, dtype=np.complex64)
         y = np.empty(c.size, dtype=np.complex64)
 
-        # print("A=", A)
-        # print("B=", B)
         gamma = np.linalg.norm(B, np.inf) / np.linalg.norm(A, np.inf)
-        print("gamma=", gamma)
         swapXY = np.empty(c.size, dtype=bool)
         for i in range(c.size):
             if np.abs(beta[i]) < gamma * np.abs(alpha[i]):
@@ -115,7 +110,6 @@ class Solver:
                     c[j] -= f[i] * A[j, i] / alpha[i]
                     A[j, i] = -beta[i] * A[j, i] / alpha[i]
 
-        print("c=", c)
         A -= B
         y = np.linalg.solve(A, c)
 
@@ -131,8 +125,6 @@ class Solver:
                 x[i] = y[i]
                 y[i] = temp
 
-        print("x=", x)
-        print("y=", y)
         return x, y
 
     def solve_samples(self, solution, incident_phis, samples, orientation):
@@ -141,7 +133,6 @@ class Solver:
 
         result = np.empty(samples.shape[0], dtype=complex)
 
-        print(incident_phis.size)
         for i in range(incident_phis.size):
             p = samples[i]
             sum = incident_phis[i]
@@ -161,7 +152,6 @@ class Solver:
                         j] - element_m * solution.phis[j]
                 else:
                     assert False, 'Invalid orientation: {}'.format(orientation)
-            print(sum)
             sum = np.atleast_1d(sum)
             assert len(sum) == 1
             result[i] = sum[0]
