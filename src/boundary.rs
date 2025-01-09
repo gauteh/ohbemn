@@ -259,9 +259,10 @@ impl Region {
     }
 
     pub fn plot<'py>(&self, py: Python<'py>, ax: Bound<'py, PyAny>) {
-        let mut locals = PyDict::new(py);
+        let locals = PyDict::new(py);
         locals.set_item("vertices", self.vertices(py)).unwrap();
         locals.set_item("edges", self.edges.to_pyarray(py)).unwrap();
+        locals.set_item("ax", ax).unwrap();
 
         for i in 0..self.len() {
             locals.set_item("i", i).unwrap();
