@@ -1,6 +1,6 @@
 use std::mem::swap;
 
-use ndarray::{Array1, Array2, Axis};
+use ndarray::{par_azip, Array1, Array2, Axis};
 use ndarray_linalg::{Norm, Solve};
 use num::{complex::ComplexFloat, Complex};
 use numpy::{AllowTypeChange, PyArrayLike1, PyArrayLike2};
@@ -125,12 +125,10 @@ impl Solver {
         assert_eq!(incident_phis.len(), points.shape()[0]);
 
         let N = incident_phis.len();
-
         let mut result = Array1::<Complex64>::zeros(N);
 
-        for i in 0..N {
-            let p = points.index_axis(Axis(0), i);
-            let mut sum = incident_phis[i];
+        par_azip!((sum in &mut result, p in points.outer_iter(), phi in &incident_phis) {
+            *sum = *phi;
 
             for j in 0..solution.len() {
                 let (qa, qb) = self.region.edge(j);
@@ -140,16 +138,14 @@ impl Solver {
 
                 match orientation {
                     Orientation::Interior => {
-                        sum += l * solution.velocities[j] - m * solution.phis[j];
+                        *sum += l * solution.velocities[j] - m * solution.phis[j];
                     }
                     Orientation::Exterior => {
-                        sum -= l * solution.velocities[j] - m * solution.phis[j];
+                        *sum -= l * solution.velocities[j] - m * solution.phis[j];
                     }
                 }
             }
-
-            result[i] = sum;
-        }
+        });
 
         result
     }

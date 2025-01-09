@@ -10,7 +10,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 complex-bessel-rs = "1.2.1"
-ndarray = { version="0.15", features = ["blas", "approx"]}
+ndarray = { version="0.15", features = ["blas", "approx", "rayon"]}
 blas-src = { version = "0.10.0", default-features = false, features = ["netlib"] }
 ndarray-linalg = "0.16.0"
 num = { version = "0.4.3", features = [ "libm" ] }
