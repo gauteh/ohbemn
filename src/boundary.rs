@@ -285,6 +285,10 @@ ax.plot([p0[0], p1[0]], [p0[1], p1[1]])
         self.vertices.to_pyarray(py)
     }
 
+    pub fn edges2d<'py>(&self, py: Python<'py>) -> Bound<'py, PyArray2<usize>> {
+        self.edges.to_pyarray(py)
+    }
+
     #[pyo3(name = "centers")]
     pub fn centers_py<'py>(&self, py: Python<'py>) -> Bound<'py, PyArray2<f64>> {
         self.centers().to_pyarray(py)
