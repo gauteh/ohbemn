@@ -1,8 +1,9 @@
 use ndarray::{array, s, Array1, Array2, Array3, Axis};
 use numpy::{
-    AllowTypeChange, Complex64, PyArray1, PyArray2, PyArray3, PyArrayLike2, PyArrayMethods, PyReadonlyArray2, PyUntypedArrayMethods, ToPyArray
+    AllowTypeChange, Complex64, PyArray1, PyArray2, PyArray3, PyArrayLike2, PyArrayMethods,
+    PyUntypedArrayMethods, ToPyArray,
 };
-use pyo3::prelude::*;
+use pyo3::{ffi::c_str, prelude::*, types::PyDict};
 
 use crate::geometry::normal_2d;
 
@@ -163,6 +164,75 @@ impl Region {
         Region::new(vertices, edges)
     }
 
+    #[staticmethod]
+    pub fn rectangle(
+        width: f64,
+        height: f64,
+        elements_x: usize,
+        elements_y: usize,
+        x0: Option<f64>,
+        y0: Option<f64>,
+    ) -> Region {
+        let x0 = x0.unwrap_or(0.0);
+        let y0 = y0.unwrap_or(0.0);
+
+        let n_elements = 2 * (elements_x + elements_y);
+
+        let mut aEdge = Array2::<usize>::zeros((n_elements, 2));
+        aEdge
+            .slice_mut(s![.., 0])
+            .assign(&Array1::from_iter(0..n_elements));
+        aEdge
+            .slice_mut(s![..-1, 1])
+            .assign(&Array1::from_iter(1..n_elements));
+        aEdge.slice_mut(s![-1, 1]).fill(0);
+
+        let mut aVertex = Array2::<f64>::zeros((n_elements, 2));
+
+        // up y-axis
+        aVertex.slice_mut(s![0..elements_y, 0]).fill(0.0);
+        aVertex
+            .slice_mut(s![0..elements_y, 1])
+            .assign(&Array1::linspace(0.0, height, elements_y));
+
+        // right aong top edge
+        aVertex
+            .slice_mut(s![elements_y..(elements_y + elements_x), 0])
+            .assign(&Array1::linspace(0.0, width, elements_x));
+        aVertex
+            .slice_mut(s![elements_y..(elements_y + elements_x), 1])
+            .fill(height);
+
+        // back down y-axis
+        aVertex
+            .slice_mut(s![
+                (elements_y + elements_x)..(2 * elements_y + elements_x),
+                0
+            ])
+            .fill(width);
+        aVertex
+            .slice_mut(s![
+                (elements_y + elements_x)..(2 * elements_y + elements_x),
+                1
+            ])
+            .assign(&Array1::linspace(height, 0.0, elements_y));
+
+        // left back to origin
+        aVertex
+            .slice_mut(s![
+                (2 * elements_y + elements_x)..(2 * (elements_y + elements_x)),
+                0
+            ])
+            .assign(&Array1::linspace(width, 0.0, elements_x));
+        aVertex
+            .slice_mut(s![
+                (2 * elements_y + elements_x)..(2 * (elements_y + elements_x)),
+                1
+            ])
+            .fill(0.0);
+
+        Region::new(aVertex, aEdge)
+    }
     // #[pyo3(name = "edge")]
     // pub fn edge_py<'py>(
     //     &self,
@@ -183,6 +253,28 @@ impl Region {
         }
 
         edges.to_pyarray(py)
+    }
+
+    pub fn plot<'py>(&self, py: Python<'py>, ax: Bound<'py, PyAny>) {
+        let mut locals = PyDict::new(py);
+        locals.set_item("vertices", self.vertices(py)).unwrap();
+        locals.set_item("edges", self.edges.to_pyarray(py)).unwrap();
+
+        for i in 0..self.len() {
+            locals.set_item("i", i).unwrap();
+            py.run(
+                c_str!(
+                    r#"
+p0 = vertices[edges[i, 0]]
+p1 = vertices[edges[i, 1]]
+ax.plot([p0[0], p1[0]], [p0[1], p1[1]])
+                    "#
+                ),
+                None,
+                Some(&locals),
+            )
+            .unwrap();
+        }
     }
 
     pub fn vertices<'py>(&self, py: Python<'py>) -> Bound<'py, PyArray2<f64>> {
