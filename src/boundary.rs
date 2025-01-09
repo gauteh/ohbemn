@@ -190,15 +190,18 @@ impl Region {
         let mut aVertex = Array2::<f64>::zeros((n_elements, 2));
 
         // up y-axis
+        let dy = height / elements_y as f64;
+        let dx = width / elements_x as f64;
+
         aVertex.slice_mut(s![0..elements_y, 0]).fill(0.0);
         aVertex
             .slice_mut(s![0..elements_y, 1])
-            .assign(&Array1::linspace(0.0, height, elements_y));
+            .assign(&Array1::linspace(0.0, height - dy, elements_y));
 
         // right aong top edge
         aVertex
             .slice_mut(s![elements_y..(elements_y + elements_x), 0])
-            .assign(&Array1::linspace(0.0, width, elements_x));
+            .assign(&Array1::linspace(0.0, width - dx, elements_x));
         aVertex
             .slice_mut(s![elements_y..(elements_y + elements_x), 1])
             .fill(height);
@@ -215,7 +218,7 @@ impl Region {
                 (elements_y + elements_x)..(2 * elements_y + elements_x),
                 1
             ])
-            .assign(&Array1::linspace(height, 0.0, elements_y));
+            .assign(&Array1::linspace(height, 0.0 + dy, elements_y));
 
         // left back to origin
         aVertex
@@ -223,7 +226,7 @@ impl Region {
                 (2 * elements_y + elements_x)..(2 * (elements_y + elements_x)),
                 0
             ])
-            .assign(&Array1::linspace(width, 0.0, elements_x));
+            .assign(&Array1::linspace(width, 0.0 + dx, elements_x));
         aVertex
             .slice_mut(s![
                 (2 * elements_y + elements_x)..(2 * (elements_y + elements_x)),

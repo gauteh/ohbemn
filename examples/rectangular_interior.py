@@ -63,5 +63,10 @@ ax.imshow(interior.phis.reshape((len(xi), len(yi))).real,
           extent=[0, 100, 0, 100],
           origin='lower')
 
+ax.set_xlim([-20, 120])
+ax.set_ylim([-20, 120])
+ax.set_title('$\\Re\{\\phi\}$')
+
 #%% Show
 plt.show()
+f.savefig('figures/rectangular_interior.png', dpi=250)
