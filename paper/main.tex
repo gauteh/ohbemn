@@ -1,4 +1,4 @@
-\documentclass[11pt]{article}
+\documentclass[11pt,twocolumn]{article}
 
 \usepackage[margin=2cm]{geometry}
 \usepackage{amsmath,amsthm,amssymb}
@@ -271,6 +271,33 @@ The gradient is:
 \end{equation}
 
 \clearpage
+\section{Cases}
+\subsection{Transparent region}
+\begin{figure*}[ht]
+  \centering
+  \includegraphics[width=0.8\textwidth]{../examples/figures/transparent.png}
+  \caption{Transparent region, defined with either Dirichlet or Neumann boundary conditions.}
+  \label{fig:transparent}
+\end{figure*}
+
+\subsection{Rectangular interior modes}
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.8\hsize]{../examples/figures/rectangular_interior.png}
+  \caption{Rectangular interior}
+  \label{fig:rectangular-interior}
+\end{figure}
+
+\subsection{Breakwater}
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.8\hsize]{../examples/figures/breakwater_closed_single_slit.png}
+  \caption{Breakwater (single slit)}
+  \label{fig:breakwater-closed-single-slit}
+\end{figure}
+
+\clearpage
 \printbibliography
 
 % \appendix
@@ -279,13 +306,4 @@ The gradient is:
 
 
 
-\section{Cases}
-
-\subsection{Rectangular interior modes}
-\begin{figure}[ht]
-  \centering
-  \includegraphics[width=0.8\textwidth]{../examples/figures/rectangular_interior.png}
-  \caption{Rectangular interior}
-  \label{fig:rectangular-interior}
-\end{figure}
 \end{document}
