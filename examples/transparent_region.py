@@ -1,8 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from ohbemn import Solver, Region, ohpy, Orientation
+from ohbemn import Solver, Region, ohpy, Orientation, style_plots
 from ohbemn.ohpy import wave, source
+
+style_plots()
 
 T = 8.   # [s]
 f = 1/T
