@@ -7,6 +7,7 @@
 \usepackage{hyperref}
 \usepackage{enumerate}
 \usepackage[margins,movemargins]{trackchanges}
+\usepackage{todonotes}
 
 \hypersetup{
   colorlinks   = true, %Colours links instead of ugly boxes
@@ -272,6 +273,11 @@ The gradient is:
 
 \clearpage
 \section{Cases}
+
+\todo[inline]{Using either Neumann or Dirichlet gives a unique solution. Therefore only one should be specified at the same time, or a linear combination of them (Robin BC).}
+
+Set incident field to $\frac{\partial \phi}{\partial n} = \partial f_p(\mathbf{x})$
+
 \subsection{Transparent region}
 \begin{figure*}[h]
   \centering
