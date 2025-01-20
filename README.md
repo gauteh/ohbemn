@@ -1,7 +1,5 @@
 # Oh Bemn! Ocean Surface Wave Boundary Element Method
 
-<img src="damn.gif" alt="damn! (star trek, picard)"/>
-
 ## Installation
 
 1. Install dependencies: `gfortran` and `rust`. Can also be installed via mamba after
