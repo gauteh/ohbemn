@@ -38,6 +38,7 @@ impl Solver {
         assert_eq!(boundary_condition.len(), self.len());
         assert_eq!(boundary_incidence.len(), self.len());
 
+        println!("computing boundary matrices..");
         let (A, B) = self.compute_boundary_matrices(k, mu, orientation);
 
         let c = boundary_incidence.phi + mu * boundary_incidence.v;
@@ -46,6 +47,7 @@ impl Solver {
             Orientation::Exterior => -c,
         };
 
+        println!("solving linear equations..");
         let (phi, v) = solve_linear_equation(
             B,
             A,
@@ -55,6 +57,7 @@ impl Solver {
             &boundary_condition.f,
         );
 
+        println!("done.");
         BoundarySolution::new(
             self.clone(),
             orientation,

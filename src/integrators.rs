@@ -185,7 +185,6 @@ pub fn n_2d(k: f64, p: A2, vecp: A2, qa: A2, qb: A2, p_on_element: bool) -> Comp
 
         let int = |x: A2| {
             let r = p.to_owned() - x;
-            let R2 = r.dot(&r);
             let drdudrdn = -r.dot(&vecq) * r.dot(&vecp) / r.dot(&r);
             let R = r.norm_l2();
 
