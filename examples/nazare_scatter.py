@@ -71,7 +71,7 @@ ax1.set_title('Incident field')
 
 # Solve boundary.
 solver = Solver(region)
-boundary_solution = solver.solve_boundary(Orientation.Exterior, k, c, bc, bi)
+boundary_solution = solver.solve_boundary(Orientation.Exterior, k+0.01j, c, bc, bi)
 
 # Solve samples in interior
 ep = np.vstack((xx.ravel(), yy.ravel())).T

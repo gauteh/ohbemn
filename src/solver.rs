@@ -27,13 +27,13 @@ impl Solver {
     pub fn solve_boundary(
         &self,
         orientation: Orientation,
-        k: f64,
+        k: Complex64,
         celerity: f64,
         boundary_condition: BoundaryCondition,
         boundary_incidence: BoundaryIncidence,
         mu: Option<Complex64>,
     ) -> BoundarySolution {
-        let mu = mu.unwrap_or(Complex64::new(0., 1.) / Complex64::new(k + 1., 0.));
+        let mu = mu.unwrap_or(Complex64::new(0., 1.) / (k + 1.));
 
         assert_eq!(boundary_condition.len(), self.len());
         assert_eq!(boundary_incidence.len(), self.len());
@@ -77,7 +77,7 @@ impl Solver {
 impl Solver {
     pub fn compute_boundary_matrices(
         &self,
-        k: f64,
+        k: Complex64,
         mu: Complex64,
         orientation: Orientation,
     ) -> (Array2<Complex64>, Array2<Complex64>) {
@@ -214,7 +214,7 @@ fn solve_linear_equation(
 #[derive(Clone)]
 pub struct BoundarySolution {
     solver: Solver,
-    k: f64,
+    k: Complex64,
     celerity: f64,
     orientation: Orientation,
     boundary_condition: BoundaryCondition,
@@ -231,7 +231,7 @@ impl BoundarySolution {
         solver: Solver,
         orientation: Orientation,
         bc: BoundaryCondition,
-        k: f64,
+        k: Complex64,
         celerity: f64,
         phis: Array1<Complex64>,
         velocities: Array1<Complex64>,
@@ -354,7 +354,7 @@ mod tests {
         let bi = region.boundary_incidence();
 
         let solver = Solver::new(region);
-        let bs = solver.solve_boundary(Orientation::Interior, k, 344.0, bc, bi, None);
+        let bs = solver.solve_boundary(Orientation::Interior, k.into(), 344.0, bc, bi, None);
 
         println!("{}", bs.phis);
 
