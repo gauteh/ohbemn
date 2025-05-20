@@ -18,3 +18,5 @@ dependencies:
   - maturin
   - jupyter
   - ipython
+  - gfortran=13
+  - gcc=13

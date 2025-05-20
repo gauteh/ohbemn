@@ -2,8 +2,9 @@
 
 ## Installation
 
-1. Install dependencies: `gfortran` and `rust`. Can also be installed via mamba after
-   you have set up and activated the environment below.
+1. Install dependencies: `gfortran=13` and `rust`. Can also be installed via mamba after
+   you have set up and activated the environment below (it may be necessary to
+   symling f95 to conda gfortran to make sure gcc and gfortran match).
 
 2. Set up and activate the conda/mamba environment:
 
