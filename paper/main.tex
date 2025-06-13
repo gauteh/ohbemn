@@ -271,6 +271,50 @@ The gradient is:
   \cdot \exp{i(k_x x + k_y y)}
 \end{equation}
 
+\subsection{Attenuation BEM}
+
+The dissipation of waves as a function of frequency or wavenumber can be implemented as a complex wavenumber. In the BEM model, dependence on steepness or total amplitude is not possible, since each frequency is solved independently. A complex wavenumber with an imaginary part defines the attenuation per meter. In \textcite{ardhuin2009ObservationSwellDissipation,collard2009MonitoringAnalysisOcean,jiang2016TrackingAttenuationNonbreaking} an empirical estimate of the dissipation of swell is found over long distances. We choose:
+
+\begin{equation}
+  \mu = 3.7 \times 10^{-7} \qquad [ \unit{\metre^{-1}} ]
+\end{equation}
+
+for significant wave height. The amplitude is proportional to the square root of a significant wave height (Eq. \eqref{eq:var-harmonic}), so that the wave number with attenuation becomes (sign in front of imaginary part dependent on sign of spatial wave) for plane waves \cite{jensen2011ComputationalOceanAcoustics}:
+
+\begin{equation}
+  k = k^\prime + i k^{\prime \prime}
+\end{equation}
+
+The Green's function for the two-dimensional Helmholtz equation is:
+
+\begin{equation}
+  G_k(\mathbf{p}, \mathbf{q}) = \frac{i}{4}H_0^{(1)}(kr)
+\end{equation}
+
+For large arguments, the Hankel-function ($H$) has an asymptotic formula:
+
+\begin{equation}
+  H_0^{(1)}(kr) \sim \sqrt{\frac{2}{\pi kr}} \exp{\left [ i \left (kr - \frac{\pi}{4} \right ) \right ]} \label{eq:hanke-asym}
+\end{equation}
+% https://encyclopediaofmath.org/wiki/Hankel_functions
+
+Implementing the attenuation as a complex wavenumber into \eqref{eq:hanke-asym} results in a small factor, from the leading $\frac{1}{\sqrt{k}}$ term and an attenuation factor: $e^{-k^{\prime \prime}r}$. Together, these have \emph{almost} the same effect as the plane-wave attenuation coefficient \footnote{\url{https://github.com/gauteh/concepts/blob/main/Waves-Complex-wavenumber-attenuation.ipynb}}. The error is well within the margin of error of the empirically estimated attenuation coefficients. $k^{\prime \prime}$ has units \emph{nepers per meter} (\unit{\neper \per \metre}):
+
+% https://github.com/gauteh/concepts/blob/main/Waves-Complex-wavenumber-attenuation.ipynb
+
+\begin{equation}
+  k^{\prime \prime} = \ln \left ( \frac{A_0}{A_x} \right ) / x = \ln \left ( \frac{1}{1-\sqrt{\mu}} \right ) / 1
+\end{equation}
+
+which is approximately:
+
+% Taylor-expansion.
+\begin{equation}
+  k^{\prime \prime} \approx \sqrt{\mu} + \mathcal{O}(\mu) \qquad \textrm{for small } \mu.
+\end{equation}
+
+\todo{should probably be a factor 2 or a sqrt}
+
 \clearpage
 \section{Cases}
 
