@@ -87,9 +87,10 @@ impl Solver {
         let centers = self.region.centers();
         let normals = self.region.normals();
 
-        for i in 0..self.len() {
-            let center = centers.index_axis(Axis(0), i);
-            let normal = normals.index_axis(Axis(0), i);
+        let ii = Array1::from_iter(0..self.len());
+
+        par_azip!((mut ai in A.outer_iter_mut(), mut bi in B.outer_iter_mut(), center in centers.outer_iter(), normal in normals.outer_iter(), i in &ii) {
+            let i = *i;
 
             for j in 0..self.len() {
                 let (qa, qb) = self.region.edge(j);
@@ -99,21 +100,21 @@ impl Solver {
                 let mt = int::mt_2d(k, center, normal, qa.view(), qb.view(), i == j);
                 let n = int::n_2d(k, center, normal, qa.view(), qb.view(), i == j);
 
-                A[[i, j]] = l + mu * mt;
-                B[[i, j]] = m + mu * n;
+                ai[j] = l + mu * mt;
+                bi[j] = m + mu * n;
             }
 
             match orientation {
                 Orientation::Interior => {
-                    A[[i, i]] = A[[i, i]] - 0.5 * mu;
-                    B[[i, i]] = B[[i, i]] + 0.5;
+                    ai[i] = ai[i] - 0.5 * mu;
+                    bi[i] = bi[i] + 0.5;
                 }
                 Orientation::Exterior => {
-                    A[[i, i]] = A[[i, i]] + 0.5 * mu;
-                    B[[i, i]] = B[[i, i]] - 0.5;
+                    ai[i] = ai[i] + 0.5 * mu;
+                    bi[i] = bi[i] - 0.5;
                 }
             }
-        }
+        });
 
         (A, B)
     }
