@@ -2,6 +2,9 @@ from .ohbemn import *  # rust implementation
 from . import ohpy
 from .ohpy import wave, source
 
+Interior = Orientation.Interior
+Exterior = Orientation.Exterior
+
 __doc__ = ohbemn.__doc__
 if hasattr(ohbemn, "__all__"):
     __all__ = ohbemn.__all__
