@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def berkoff_partial_reflection(R, phase_shift=None):
+def berkoff_partial_reflection(R, phase_shift=None, incidence=0.0):
     """
     Calculate the real and imaginary reflection coefficient for a partially reflecting boundary, by using Berkhoff (1976)'s method. Equations 3.2.10.
 
@@ -11,6 +11,8 @@ def berkoff_partial_reflection(R, phase_shift=None):
 
         phase_shift: Phase shift of reflected wave (unless R is complex), in
                      radians between 0 and pi/2. Default is 0.
+
+        incidence: incidence angle (radians, default 0.)
 
     Returns:
         A tuple of (a_1, a_2) in a = (a_1 + ia_2)
