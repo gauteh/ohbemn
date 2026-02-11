@@ -129,7 +129,7 @@ pub fn mt_2d(k: Complex64, p: A2, vecp: A2, qa: A2, qb: A2, p_on_element: bool) 
     }
 }
 
-/// Compute Mt matrix.
+/// Compute N matrix.
 ///
 /// k: wave number
 /// p: point (center of edge)
