@@ -119,6 +119,7 @@ impl Solver {
         (A, B)
     }
 
+    /// Compute the potential at the sample points.
     pub fn solve_samples(
         &self,
         solution: &BoundarySolution,
