@@ -3,7 +3,7 @@ import numpy as np
 
 def berkoff_partial_reflection(R, phase_shift=None, incidence=0.0):
     """
-    Calculate the real and imaginary reflection coefficient for a partially reflecting boundary, by using Berkhoff (1976)'s method. Equations 3.2.10.
+    Calculate the real and imaginary reflection coefficient for a partially reflecting boundary, by using Berkhoff (1976)'s and Isaacson and Qu (1990)'s method. Equations 3.2.10 and Equation 15 respectively.
 
     Args:
 
@@ -15,7 +15,7 @@ def berkoff_partial_reflection(R, phase_shift=None, incidence=0.0):
         incidence: incidence angle (radians, default 0.)
 
     Returns:
-        A tuple of (a_1, a_2) in a = (a_1 + ia_2)
+        A complex transmission coefficient a = (a_1 + ia_2)
 
     The boundary condition is:
 
@@ -28,9 +28,9 @@ def berkoff_partial_reflection(R, phase_shift=None, incidence=0.0):
 
         Boundary condition with partially reflecting boundary:
 
-        >>> a1, a2 = berkoff_partial_reflection(.7)
+        >>> a = berkoff_partial_reflection(.7)
         >>> bc.f[i] = 0.
-        >>> bc.alpha[i] = (a1 + 1j*a2)*k
+        >>> bc.alpha[i] = a*k
         >>> bc.beta[i] = 1.
 
     """
@@ -42,6 +42,8 @@ def berkoff_partial_reflection(R, phase_shift=None, incidence=0.0):
         if phase_shift is None:
             phase_shift = 0.
 
+    assert R >= 0 and R <= 1., f"R must be between 0 and 1: {R}"
+
     if phase_shift < 0. or phase_shift > (np.pi / 2):
         raise ValueError(
             f"phase_shift ({phase_shift}) must be between 0 and pi/2")
@@ -51,4 +53,4 @@ def berkoff_partial_reflection(R, phase_shift=None, incidence=0.0):
 
     a_2 = (1 - R**2) / (1 + R**2 + 2. * R * np.cos(phase_shift))
 
-    return a_1, a_2
+    return a_1 + 1j * a_2
