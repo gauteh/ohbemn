@@ -48,6 +48,8 @@ def phi_depth(k, z, h):
 def wavelength(c, f):
     return c / f
 
+def wavelength_k(k):
+    return 1 / k
 
 def wavec_interm(T, h, g=g, N=200, prt=False):
     """
