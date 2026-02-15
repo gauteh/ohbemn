@@ -6,6 +6,7 @@ from numpy.linalg import norm
 
 import ohbemn as oh
 from ohbemn import ohpy
+import ohbemn.ohpy.intop
 
 
 @pytest.mark.parametrize("impl,fun", [("py", ohpy.intop.l_2d),
