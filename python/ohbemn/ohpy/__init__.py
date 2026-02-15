@@ -10,6 +10,9 @@ import numpy as np
 def region_from_xy(x, y):
     """
     Return vertices and edges from a list of x and y coordinates in a polygon.
+
+    This does not guarantee that the polygon points are given in a clockwise
+    direction.
     """
     if x[-1] == x[0] or y[-1] == y[0]:
         print('warning: connecting end to start of polygon.')
@@ -17,7 +20,6 @@ def region_from_xy(x, y):
         y = np.append(y, y[0])
 
     vertices = np.vstack((x, y)).T
-    print(vertices)
 
     # set up edges
     e0 = np.arange(0, vertices.shape[0] - 1)
