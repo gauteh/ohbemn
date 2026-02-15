@@ -14,7 +14,7 @@ def region_from_xy(x, y):
     This does not guarantee that the polygon points are given in a clockwise
     direction.
     """
-    if x[-1] == x[0] or y[-1] == y[0]:
+    if x[-1] != x[0] or y[-1] != y[0]:
         print('warning: connecting end to start of polygon.')
         x = np.append(x, x[0])
         y = np.append(y, y[0])
