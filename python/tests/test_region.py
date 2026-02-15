@@ -3,6 +3,7 @@ import pandas as pd
 from shapely import Polygon
 import ohbemn as oh
 from ohbemn import ohpy
+import numpy as np
 
 
 def test_square():
@@ -54,10 +55,13 @@ def test_polygon():
     print(region)
     print(region.normals())
 
-    n = region.normals()
-
-    assert n[0][1] > 0.
-
     # plt.figure()
     # region.plot(plt.gca())
     # plt.show()
+
+    n = region.normals()
+
+    assert n[0][1] > 0., "wrong orientation, normal should be outwards"
+    assert ~np.any(
+        np.isnan(n)
+    ), "can happen with zero length segment, e.g. same point twice in coords"
