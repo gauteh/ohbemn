@@ -1,6 +1,6 @@
 from .ohbemn import *  # rust implementation
 from . import ohpy
-from .ohpy import wave, source, rcoeff
+from .ohpy import wave, source, rcoeff, region_from_polygon, region_from_xy
 
 Interior = Orientation.Interior
 Exterior = Orientation.Exterior
