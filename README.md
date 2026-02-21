@@ -12,12 +12,10 @@
 <table>
    <tr>
       <td>
-         <img src="./examples/east-alexandria/ea-google.png">
+         <img src="./examples/east-alexandria/ea-google.png" >
       </td>
       <td>
-         <video controls>
-            <source src="./examples/east-alexandria/ea-T8.0s_R0.1.mp4" type="video/mp4">
-         </video>
+         <video src="./examples/east-alexandria/ea-T8.0s_R0.1.mp4" >
       </td>
    </tr>
 </table>
