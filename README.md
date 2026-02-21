@@ -11,7 +11,16 @@
 
 East Alexandria:
 
-https://github.com/user-attachments/assets/c96d6d32-1fea-4bd2-8774-e30473bfcd2e
+<table>
+   <tr>
+      <td>
+         <img src="./examples/east-alexandria/ea-google.png" >
+      </td>
+      <td>
+         https://github.com/user-attachments/assets/c96d6d32-1fea-4bd2-8774-e30473bfcd2e
+      </td>
+   </tr>
+</table>
 
 
 ## Installation
