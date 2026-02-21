@@ -11,7 +11,7 @@
 
 East Alexandria:
 
-https://github.com/gauteh/ohbemn/raw/refs/heads/main/examples/east-alexandria/ea-T8.0s_R0.1.mp4
+https://github.com/user-attachments/assets/c96d6d32-1fea-4bd2-8774-e30473bfcd2e
 
 
 ## Installation
