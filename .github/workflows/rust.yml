@@ -36,8 +36,8 @@ jobs:
         run: |
           pip install numpy
 
-      - run: cargo build -r --verbose
-      - run: cargo test -r --verbose
+      - run: cargo build --verbose
+      - run: cargo test --verbose
 
   nightly:
     runs-on: ubuntu-latest
@@ -62,5 +62,5 @@ jobs:
           sudo apt-get -y install build-essential libssl-dev
           pip install numpy
 
-      - run: cargo build -r --verbose
-      - run: cargo test -r --verbose
+      - run: cargo build --verbose
+      - run: cargo test --verbose
