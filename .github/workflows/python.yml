@@ -26,8 +26,8 @@ jobs:
         platform:
           - runner: ubuntu-latest
             target: x86_64
-          - runner: ubuntu-latest
-            target: x86
+          # - runner: ubuntu-latest
+          #   target: x86
           # - runner: ubuntu-latest
           #   target: aarch64
           # - runner: ubuntu-latest
@@ -38,19 +38,14 @@ jobs:
           #   target: ppc64le
     steps:
       - uses: actions/checkout@v4
-      - uses: mamba-org/setup-micromamba@v2
+      - uses: actions/setup-python@v5
         with:
-          environment-file: environment.yml
-          cache-environment: true
-          post-cleanup: 'all'
-          init-shell: >-
-            bash
-          extra-specs: python=${{ matrix.python-version }}
+          python-version: 3.x
 
       - name: Install deps
         run: |
           sudo apt-get -y update
-          sudo apt-get -y install build-essential libssl-dev libc++-dev
+          sudo apt-get -y install build-essential libssl-dev libc++-dev "cmake<4"
 
       - name: Build wheels
         uses: PyO3/maturin-action@v1
@@ -71,7 +66,27 @@ jobs:
         shell: bash
         run: |
           set -e
-          pytest -v
+          python3 -m venv .venv
+          source .venv/bin/activate
+          pip install ohbemn --no-index --find-links dist --force-reinstall
+          pip install pytest pytest-benchmark numpy shapely
+          pytest
+
+      - name: pytest
+        if: ${{ !startsWith(matrix.platform.target, 'x86') && matrix.platform.target != 'ppc64' }}
+        uses: uraimo/run-on-arch-action@v2
+        with:
+          arch: ${{ matrix.platform.target }}
+          distro: ubuntu22.04
+          githubToken: ${{ github.token }}
+          install: |
+            apt-get update
+            apt-get install -y --no-install-recommends python3 python3-pip
+            pip3 install -U pip pytest pytest-benchmark numpy shapely
+          run: |
+            set -e
+            pip3 install ohbemn --find-links dist --force-reinstall
+            pytest
 
   # musllinux:
   #   runs-on: ${{ matrix.platform.runner }}
