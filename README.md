@@ -14,7 +14,9 @@
       <td>
          <img src="./examples/east-alexandria/ea-google.png">
       </td>
-         <img src="./examples/east-alexandria/ea-T8.0s_R0.1.png">
+         <video controls>
+            <source src="./examples/east-alexandria/ea-T8.0s_R0.1.mp4" type="video/mp4">
+         </video>
       <td>
    </td>
    </tr>
