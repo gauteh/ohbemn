@@ -41,12 +41,10 @@ jobs:
       - uses: mamba-org/setup-micromamba@v2
         with:
           environment-file: environment.yml
-          channels: conda-forge
           cache-environment: true
           post-cleanup: 'all'
           init-shell: >-
             bash
-            powershell
           extra-specs: python=${{ matrix.python-version }}
 
       - name: Install deps
@@ -73,27 +71,7 @@ jobs:
         shell: bash
         run: |
           set -e
-          python3 -m venv .venv
-          source .venv/bin/activate
-          pip install ohbemn --no-index --find-links dist --force-reinstall
-          pip install pytest pytest-benchmark numpy shapely
-          pytest
-
-      - name: pytest
-        if: ${{ !startsWith(matrix.platform.target, 'x86') && matrix.platform.target != 'ppc64' }}
-        uses: uraimo/run-on-arch-action@v2
-        with:
-          arch: ${{ matrix.platform.target }}
-          distro: ubuntu22.04
-          githubToken: ${{ github.token }}
-          install: |
-            apt-get update
-            apt-get install -y --no-install-recommends python3 python3-pip
-            pip3 install -U pip pytest pytest-benchmark numpy shapely
-          run: |
-            set -e
-            pip3 install ohbemn --find-links dist --force-reinstall
-            pytest
+          pytest -v
 
   # musllinux:
   #   runs-on: ${{ matrix.platform.runner }}
