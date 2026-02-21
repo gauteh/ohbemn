@@ -9,7 +9,7 @@
 `ohbemn` is an implementation of the Boundary Element Method based on [Kikup
 (1998)](https://www.researchgate.net/profile/Stephen-Kirkup/publication/261760562_The_Boundary_Element_Method_in_Acoustics/links/59e730b44585151e5465c4a7/The-Boundary-Element-Method-in-Acoustics.pdf) designed for simple simulations of ocean surface waves.
 
-<video src="./examples/east-alexandria/ea-T8.0s_R0.1.mp4" >
+https://github.com/gauteh/ohbemn/raw/refs/heads/main/examples/east-alexandria/ea-T8.0s_R0.1.mp4
 
 ## Installation
 
