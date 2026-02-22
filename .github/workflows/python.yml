@@ -52,7 +52,8 @@ jobs:
           init-shell: >-
             bash
             powershell
-          extra-specs: python=${{ matrix.python-version }}
+          create-args: >-
+            python=${{ matrix.python-version }}
 
       - name: Install deps
         run: |
