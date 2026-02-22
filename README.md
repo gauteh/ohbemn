@@ -13,6 +13,8 @@ The Old harbour in Alexandria (with initial facilities from 1900 BC):
 
 https://github.com/user-attachments/assets/c96d6d32-1fea-4bd2-8774-e30473bfcd2e
 
+<img src="./examples/east-alexandria/ea-google.png" />
+
 
 ## Installation
 
