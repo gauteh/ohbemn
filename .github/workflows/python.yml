@@ -58,13 +58,21 @@ jobs:
           sudo apt-get -y update
           sudo apt-get -y install build-essential libssl-dev libc++-dev
 
+      - name: Build ohbemn
+        run: |
+          maturin develop --release
+
       - name: Build wheels
-        uses: PyO3/maturin-action@v1
-        with:
-          target: ${{ matrix.platform.target }}
-          args: --release --out dist
-          sccache: 'true'
-          manylinux: auto
+        run: |
+          maturin build --release --out dist
+
+      # - name: Build wheels
+      #   uses: PyO3/maturin-action@v1
+      #   with:
+      #     target: ${{ matrix.platform.target }}
+      #     args: --release --out dist
+      #     sccache: 'true'
+      #     manylinux: auto
 
       - name: Upload wheels
         uses: actions/upload-artifact@v4
