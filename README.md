@@ -9,7 +9,7 @@
 `ohbemn` is an implementation of the Boundary Element Method based on [Kikup
 (1998)](https://www.researchgate.net/profile/Stephen-Kirkup/publication/261760562_The_Boundary_Element_Method_in_Acoustics/links/59e730b44585151e5465c4a7/The-Boundary-Element-Method-in-Acoustics.pdf) designed for simple simulations of ocean surface waves.
 
-East Alexandria:
+The Old harbour in Alexandria (with initial facilities from 1900 BC):
 
 https://github.com/user-attachments/assets/c96d6d32-1fea-4bd2-8774-e30473bfcd2e
 
