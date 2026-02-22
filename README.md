@@ -18,13 +18,14 @@ https://github.com/user-attachments/assets/c96d6d32-1fea-4bd2-8774-e30473bfcd2e
 
 1. Install dependencies: `gfortran=13` and `rust`. Can also be installed via conda/mamba after
    you have set up and activated the environment below (it may be necessary to
-   symlinking `f95` to conda `gfortran` to make sure `gcc` and `gfortran` match).
+   symlink `gfortran` to `f95` in your conda environment to make sure `gcc` and `gfortran` match).
 
 2. Set up and activate the conda/mamba environment:
 
 ```sh
 $ mamba env create -f environment.yml
 $ conda activate ohbemn
+$ ln -s "${CONDA_PREFIX}/bin/gfortran" "${CONDA_PREFIX}/bin/f95"
 ```
 
 3. Build and install this package into the conda/mamba environment:
