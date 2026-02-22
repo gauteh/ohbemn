@@ -6,7 +6,7 @@
 [![Rust](https://github.com/gauteh/ohbemn/workflows/Rust/badge.svg)](https://github.com/gauteh/ohbemn/actions)
 [![Python](https://github.com/gauteh/ohbemn/workflows/Python/badge.svg)](https://github.com/gauteh/ohbemn/actions)
 
-`ohbemn` is an implementation of the Boundary Element Method based on [Kikup
+`ohbemn` is an implementation of the Boundary Element Method based on [Kirkup
 (1998)](https://www.researchgate.net/profile/Stephen-Kirkup/publication/261760562_The_Boundary_Element_Method_in_Acoustics/links/59e730b44585151e5465c4a7/The-Boundary-Element-Method-in-Acoustics.pdf) designed for simple simulations of ocean surface waves.
 
 The Old harbour in Alexandria (with initial facilities from 1900 BC):
