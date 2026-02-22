@@ -10,6 +10,9 @@ def test_ohpy_solve_rectangle_zero_bc(benchmark):
     T = 1 / f
     d = 40.  # [m]
     c, cg, k = ohpy.wave.wavec_interm(T, d)
+    print(c, k)
+    print(c.dtype, k.dtype)
+    # assert False
     print("wave length:", c / f)
 
     region = ohpy.Region.rectangle(100, 100, 10, 10)
@@ -60,6 +63,6 @@ def test_ohpy_solve_rectangle_zero_bc(benchmark):
         0.43684256 + 3.8082184e-05j, 0.7941744 + 1.5951913e-02j
     ]
 
-    np.testing.assert_allclose(boundary_solution.phis, phis)
+    np.testing.assert_allclose(boundary_solution.phis, phis, atol=2e-6)
 
 

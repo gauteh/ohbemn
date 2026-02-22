@@ -48,8 +48,10 @@ def phi_depth(k, z, h):
 def wavelength(c, f):
     return c / f
 
+
 def wavelength_k(k):
     return 1 / k
+
 
 def wavec_interm(T, h, g=g, N=200, prt=False):
     """
@@ -63,6 +65,7 @@ def wavec_interm(T, h, g=g, N=200, prt=False):
         cg: group speed [m/s]
         k:  wave number [1/m]
     """
+    scalar = np.isscalar(T)
     T = np.atleast_1d(T)
     assert np.all(h > 0)
     w = 2 * np.pi / T
@@ -75,9 +78,22 @@ def wavec_interm(T, h, g=g, N=200, prt=False):
 
     c = w / k
     kh = k * h
+
+    # if np.isscalar(kh):
+    #     if kh > 2 * np.pi:
+    #         kh = 2 * np.pi
+    # else:
     kh[kh > 2 * np.pi] = 2 * np.pi
+
     n = 0.5 * (1 + 2 * kh / np.sinh(2 * kh))
     cg = c * n
+
+    if scalar:
+        assert len(c) == 1
+        c = c[0]
+        cg = cg[0]
+        k = k[0]
+
     return c, cg, k
 
 

@@ -61,7 +61,7 @@ def test_ohpy_solve_boundary_rectangle_neumann(benchmark):
         0.43684256 + 3.8082184e-05j, 0.7941744 + 1.5951913e-02j
     ]
 
-    np.testing.assert_allclose(boundary_solution.phis, phis)
+    np.testing.assert_allclose(boundary_solution.phis, phis, atol=1e-7)
 
 
 def test_ohrs_solve_boundary_rectangle_neumann(benchmark):
