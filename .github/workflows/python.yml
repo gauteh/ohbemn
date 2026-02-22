@@ -21,8 +21,12 @@ permissions:
 jobs:
   linux:
     runs-on: ${{ matrix.platform.runner }}
+    defaults:
+      run:
+        shell: bash -l {0}
     strategy:
       matrix:
+        python-version: [ '3.13', '3.14' ]
         platform:
           - runner: ubuntu-latest
             target: x86_64
@@ -38,16 +42,21 @@ jobs:
           #   target: ppc64le
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: mamba-org/setup-micromamba@v2
         with:
-          python-version: 3.x
+          environment-file: environment.yml
+          channels: conda-forge
+          cache-environment: true
+          post-cleanup: 'all'
+          init-shell: >-
+            bash
+            powershell
+          extra-specs: python=${{ matrix.python-version }}
 
       - name: Install deps
         run: |
           sudo apt-get -y update
           sudo apt-get -y install build-essential libssl-dev libc++-dev
-          sudo apt-get -y remove cmake
-          pip install "cmake<4"
 
       - name: Build wheels
         uses: PyO3/maturin-action@v1
@@ -62,33 +71,11 @@ jobs:
         with:
           name: wheels-linux-${{ matrix.platform.target }}
           path: dist
+          overwrite: true
 
-      - name: pytest
-        if: ${{ startsWith(matrix.platform.target, 'x86_64') }}
-        shell: bash
+      - name: Run tests
         run: |
-          set -e
-          python3 -m venv .venv
-          source .venv/bin/activate
-          pip install ohbemn --no-index --find-links dist --force-reinstall
-          pip install pytest pytest-benchmark numpy shapely
-          pytest
-
-      - name: pytest
-        if: ${{ !startsWith(matrix.platform.target, 'x86') && matrix.platform.target != 'ppc64' }}
-        uses: uraimo/run-on-arch-action@v2
-        with:
-          arch: ${{ matrix.platform.target }}
-          distro: ubuntu22.04
-          githubToken: ${{ github.token }}
-          install: |
-            apt-get update
-            apt-get install -y --no-install-recommends python3 python3-pip
-            pip3 install -U pip pytest pytest-benchmark numpy shapely
-          run: |
-            set -e
-            pip3 install ohbemn --find-links dist --force-reinstall
-            pytest
+          pytest -vs --log-cli-level=debug
 
   # musllinux:
   #   runs-on: ${{ matrix.platform.runner }}

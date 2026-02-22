@@ -2,7 +2,7 @@
 
 <!-- [![Crates.io](https://img.shields.io/crates/v/ohbemn.svg)](https://crates.io/crates/ohbemn) -->
 <!-- [![Documentation](https://docs.rs/ohbemn/badge.svg)](https://docs.rs/ohbemn/) -->
-[![PyPI](https://img.shields.io/pypi/v/ohbemn.svg?style=flat-square)](https://pypi.org/project/ohbemn/)
+<!-- [![PyPI](https://img.shields.io/pypi/v/ohbemn.svg?style=flat-square)](https://pypi.org/project/ohbemn/) -->
 [![Rust](https://github.com/gauteh/ohbemn/workflows/Rust/badge.svg)](https://github.com/gauteh/ohbemn/actions)
 [![Python](https://github.com/gauteh/ohbemn/workflows/Python/badge.svg)](https://github.com/gauteh/ohbemn/actions)
 
