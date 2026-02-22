@@ -60,10 +60,14 @@ jobs:
 
       - name: Build ohbemn
         run: |
+          export CMAKE_Fortran_COMPILER=$(which gfortran)
+          echo "Fortran: ${CMAKE_Fortran_COMPILER}"
           maturin develop --release
 
       - name: Build wheels
         run: |
+          export CMAKE_Fortran_COMPILER=$(which gfortran)
+          echo "Fortran: ${CMAKE_Fortran_COMPILER}"
           maturin build --release --out dist
 
       # - name: Build wheels
