@@ -26,7 +26,7 @@ jobs:
         shell: bash -l {0}
     strategy:
       matrix:
-        python-version: [ '3.13', '3.14' ]
+        python-version: [ '3.12', '3.13' ]
         platform:
           - runner: ubuntu-latest
             target: x86_64
