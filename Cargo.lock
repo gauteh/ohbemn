@@ -28,15 +28,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ace50bade8e6234aa140d9a2f552bbee1db4d353f69b8217bc503490fc1a9f26"
 
 [[package]]
-name = "blas-src"
-version = "0.10.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b95e83dc868db96e69795c0213143095f03de9dd3252f205d4ac716e4076a7e0"
-dependencies = [
- "netlib-src",
-]
-
-[[package]]
 name = "byteorder"
 version = "1.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -250,9 +241,9 @@ dependencies = [
 
 [[package]]
 name = "netlib-src"
-version = "0.8.0"
+version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "39f41f36bb4d46906d5a72da5b73a804d9de1a7282eb7c89617201acda7b8212"
+checksum = "abe2058825b000774d9c99f502accb07e01692d58fc14b92a808b65f82978fbd"
 dependencies = [
  "cmake",
 ]
@@ -350,13 +341,13 @@ dependencies = [
 
 [[package]]
 name = "ohbemn"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "approx 0.5.1",
- "blas-src",
  "complex-bessel-rs",
  "ndarray",
  "ndarray-linalg",
+ "netlib-src",
  "num",
  "numpy",
  "pyo3",

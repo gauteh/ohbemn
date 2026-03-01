@@ -3,7 +3,7 @@
 use ndarray::{Array, ArrayView, Dim};
 use pyo3::prelude::*;
 
-extern crate blas_src;
+extern crate netlib_src;
 
 pub mod boundary;
 pub mod geometry;
