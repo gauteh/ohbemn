@@ -68,6 +68,7 @@ jobs:
       - name: Build wheels
         run: |
           maturin build --release --out dist
+          ls -la dist/
 
       # - name: Build wheels
       #   uses: PyO3/maturin-action@v1
@@ -77,13 +78,13 @@ jobs:
       #     sccache: 'true'
       #     manylinux: auto
 
-      - name: Upload wheels
-        uses: actions/upload-artifact@v7
-        with:
-          name: wheels-linux-${{ matrix.platform.target }}-${{matrix.python-version }}
-          path: dist/
-          archive: false
-          overwrite: true
+      # - name: Upload wheels
+      #   uses: actions/upload-artifact@v7
+      #   with:
+      #     name: wheels-linux-${{ matrix.platform.target }}-${{matrix.python-version }}
+      #     path: dist/
+      #     archive: false
+      #     overwrite: true
 
       - name: Run tests
         run: |
