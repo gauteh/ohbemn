@@ -2,9 +2,10 @@
 
 <!-- [![Crates.io](https://img.shields.io/crates/v/ohbemn.svg)](https://crates.io/crates/ohbemn) -->
 <!-- [![Documentation](https://docs.rs/ohbemn/badge.svg)](https://docs.rs/ohbemn/) -->
-<!-- [![PyPI](https://img.shields.io/pypi/v/ohbemn.svg?style=flat-square)](https://pypi.org/project/ohbemn/) -->
 [![Rust](https://github.com/gauteh/ohbemn/workflows/Rust/badge.svg)](https://github.com/gauteh/ohbemn/actions)
 [![Python](https://github.com/gauteh/ohbemn/workflows/Python/badge.svg)](https://github.com/gauteh/ohbemn/actions)
+[![PyPI](https://img.shields.io/pypi/v/ohbemn.svg?style=flat-square)](https://pypi.org/project/ohbemn/)
+<!-- [![Anaconda-Server Badge](https://anaconda.org/conda-forge/ohbemn/badges/version.svg)](https://anaconda.org/conda-forge/ohbemn) -->
 
 `ohbemn` is an implementation of the Boundary Element Method based on [Kirkup
 (1998)](https://www.researchgate.net/profile/Stephen-Kirkup/publication/261760562_The_Boundary_Element_Method_in_Acoustics/links/59e730b44585151e5465c4a7/The-Boundary-Element-Method-in-Acoustics.pdf) designed for simple simulations of ocean surface waves.
