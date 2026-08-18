@@ -5,24 +5,22 @@ g = 9.80665  # [m/s^2] standard gravity
 
 def eta(phi, k, c):
     r"""
-    Calculate surface elevation (eta) from the velocity potential (phi):
+    Calculate surface elevation (eta) from the velocity potential (phi).
 
-    From the dynamic boundary condition:
-
-    .. math::
-
-        \frac{\partial phi}{\partial t} = -g \eta
-
-    :math:`\phi` is the complex amplitude of the vector potential of a harmonic wave. The time component is:
+    From the dynamic boundary condition (linearized Bernoulli at the surface):
 
     .. math::
 
-        \exp(-i \omega t)
+        \frac{\partial \varphi}{\partial t} + g \eta = 0
 
-    which is straightforward to differentiate (since :math:`\phi` is otherwise constant in time).
+    With time dependence :math:`\exp(-i \omega t)`, so :math:`\partial/\partial t \to -i\omega`:
+
+    .. math::
+
+        \eta = \frac{i \omega}{g} \varphi
     """
     w = k * c
-    return (-1j / g * w * phi)
+    return (1j * w / g * phi)
 
 
 def phi(eta, k, c):
@@ -32,7 +30,7 @@ def phi(eta, k, c):
     """
     w = k * c
 
-    return -g / (1j * w) * eta
+    return g / (1j * w) * eta
 
 
 def phi_depth(k, z, h):
