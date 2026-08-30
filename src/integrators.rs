@@ -24,7 +24,10 @@ where
 {
     let v = b - a;
 
-    // not sure how these are computed. does not match weights from quad-gauss.
+    // Standard 8-point Gauss-Legendre quadrature (Kirkup, 1998), with the
+    // reference nodes and weights on [-1, 1] mapped onto [0, 1] via
+    // x' = (x + 1) / 2, w' = w / 2, matching the parametrization
+    // x = a + x_val * (b - a) used below.
     let nw = [
         [0.980144928249, 5.061426814519e-02],
         [0.898333238707, 0.111190517227],
