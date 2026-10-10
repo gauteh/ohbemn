@@ -43,7 +43,7 @@ def plane(kx, ky, x, y):
 
         x, y: point to evaluate.
     """
-    return np.exp(1j * (kx * x + ky * y))
+    return np.atleast_1d(np.exp(1j * (kx * x + ky * y)))
 
 
 def dplane(kx, ky, x, y, n):
