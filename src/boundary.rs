@@ -88,6 +88,7 @@ impl Region {
     }
 
     #[staticmethod]
+    #[pyo3(signature = (scale=None))]
     pub fn square(scale: Option<f64>) -> Region {
         let vertices = scale.unwrap_or(1.0)
             * 10.0
@@ -165,6 +166,7 @@ impl Region {
     }
 
     #[staticmethod]
+    #[pyo3(signature = (width, height, elements_x, elements_y, x0=None, y0=None))]
     pub fn rectangle(
         width: f64,
         height: f64,

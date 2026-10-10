@@ -9,14 +9,14 @@ name = "ohbemn"
 crate-type = ["cdylib"]
 
 [dependencies]
-complex-bessel-rs = "1.2.1"
-ndarray = { version="0.15", features = ["blas", "approx", "rayon"]}
+complex-bessel-rs = "1.3.0"
+ndarray = { version="0.17", features = ["blas", "approx", "rayon"]}
 # blas-src = { version = "0.10.0", default-features = false, features = ["netlib"] }
 netlib-src = { version = "0.9.0" }
-ndarray-linalg = "0.16.0"
+ndarray-linalg = "0.18"
 num = { version = "0.4.3", features = [ "libm" ] }
-numpy = { version = "0.23.0" }
-pyo3 = { version = "0.23.1", features = [ "num-complex", "abi3-py39" ] }
+numpy = { version = "0.29.0" }
+pyo3 = { version = "0.29", features = [ "num-complex", "abi3-py39" ] }
 approx = { version = "0.5.1", features = [ "num-complex" ] }
 
 [features]

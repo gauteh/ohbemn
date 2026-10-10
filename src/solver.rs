@@ -24,6 +24,7 @@ impl Solver {
         Solver { region }
     }
 
+    #[pyo3(signature = (orientation, k, celerity, boundary_condition, boundary_incidence, mu=None))]
     pub fn solve_boundary(
         &self,
         orientation: Orientation,
