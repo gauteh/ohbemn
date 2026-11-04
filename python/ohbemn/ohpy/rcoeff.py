@@ -16,14 +16,28 @@ def berkoff_partial_reflection(R, phase_shift=None, incidence=0.0):
         incidence: incidence angle (radians, default 0.)
 
     Returns:
-        A complex transmission coefficient a = (a_1 + ia_2)
+        The complex coefficient for the boundary condition in ohbemn form,
+        with the normal pointing out of the fluid region (the region normal)
+        and time dependence exp(-i omega t).
 
-    The boundary condition is:
+    The boundary condition is (Berkhoff, 1976, with n_f the normal pointing
+    into the fluid):
 
     .. math::
 
-        \\frac{\\partial \\phi}{\\partial n} + \\alpha k \\phi = 0 \\
-        \\alpha = \\alpha_1 + i \\alpha_2
+        \\frac{\\partial \\phi}{\\partial n_f} + \\alpha k \\phi = 0 \\
+        \\alpha = (\\alpha_1 + i \\alpha_2) \\cos\\gamma
+
+    With the outward region normal n = -n_f this is
+
+    .. math::
+
+        \\frac{\\partial \\phi}{\\partial n} - \\alpha k \\phi = 0
+
+    so this function returns -alpha. R = 0 at normal incidence gives the
+    Sommerfeld radiation condition, d(phi)/dn = i k phi, and R = 1 gives
+    Neumann. For Orientation.Exterior the region normal points into the
+    fluid, use the negative of the returned value.
 
     Example:
 
@@ -54,7 +68,7 @@ def berkoff_partial_reflection(R, phase_shift=None, incidence=0.0):
 
     a_2 = (1 - R**2) / (1 + R**2 + 2. * R * np.cos(phase_shift))
 
-    return a_1 + 1j * a_2
+    return -(a_1 + 1j * a_2) * np.cos(incidence)
 
 
 ## Grazing and incidence angle
