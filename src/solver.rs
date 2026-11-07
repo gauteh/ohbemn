@@ -3,7 +3,7 @@ use std::mem::swap;
 use ndarray::{par_azip, Array1, Array2, Axis};
 use ndarray_linalg::{Norm, Solve};
 use num::{complex::ComplexFloat, Complex};
-use numpy::{AllowTypeChange, PyArrayLike1, PyArrayLike2};
+use numpy::{AllowTypeChange, PyArrayLike1, PyArrayLike2, PyArray2, ToPyArray};
 use numpy::{Complex64, PyArray1, PyArrayMethods};
 use pyo3::prelude::*;
 
@@ -72,6 +72,22 @@ impl Solver {
 
     pub fn len(&self) -> usize {
         self.region.len()
+    }
+
+    /// Boundary matrices (A, B) of the combined (Burton-Miller) integral equation, such
+    /// that the boundary potential and normal derivative satisfy `B phi = A v + c`, with
+    /// `c = phi_inc + mu v_inc` (interior) or `c = -(phi_inc + mu v_inc)` (exterior).
+    #[pyo3(name = "boundary_matrices", signature = (orientation, k, mu=None))]
+    pub fn boundary_matrices_py<'py>(
+        &self,
+        py: Python<'py>,
+        orientation: Orientation,
+        k: Complex64,
+        mu: Option<Complex64>,
+    ) -> (Bound<'py, PyArray2<Complex64>>, Bound<'py, PyArray2<Complex64>>) {
+        let mu = mu.unwrap_or(Complex64::new(0., 1.) / (k + 1.));
+        let (A, B) = self.compute_boundary_matrices(k, mu, orientation);
+        (A.to_pyarray(py), B.to_pyarray(py))
     }
 }
 
