@@ -1,6 +1,7 @@
 from . import geometry
 from . import wave
 from . import rcoeff
+from . import coupled
 from .boundary import Region
 from .solver import Solver
 

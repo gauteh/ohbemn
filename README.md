@@ -38,6 +38,29 @@ $ ln -s "${CONDA_PREFIX}/bin/gfortran" "${CONDA_PREFIX}/bin/f95"
 $ pip install -e .
 ```
 
+## Coupled subregions
+
+`ohbemn.coupled` couples subregions of constant depth (the subregion BEM of
+Brebbia & Dominguez 1992, Sect. 2.14), with continuity of the potential and the
+flux `g h dphi/dn` (long waves) across shared boundaries. A boundary that
+belongs to only one subregion is a wall (`alpha phi + beta dphi/dn = f`, by
+default `dphi/dn = 0`).
+
+```python
+from ohbemn import coupled
+
+rim = coupled.Boundary.circle(1000., 256)
+p = coupled.Problem(T=129., subregions=[coupled.Subregion(10., outer=rim),
+                                        coupled.Exterior(160., holes=[rim])])
+phi = p.solve(direction=0.).field(points)
+```
+
+See `examples/coupled_regions.py` (a sill, a pit as concentric rings, and a
+shoal with an island) and `python/tests/test_coupled.py` (validation against
+Longuet-Higgins 1967 and Suh et al. 2005).
+
+<img src="./examples/figures/coupled_regions.png" />
+
 ## Inspiration
 
 * https://www.boundary-element-method.com/

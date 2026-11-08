@@ -89,6 +89,37 @@ impl Solver {
         let (A, B) = self.compute_boundary_matrices(k, mu, orientation);
         (A.to_pyarray(py), B.to_pyarray(py))
     }
+
+    /// Field at `points` from the potential `phis` and normal derivative `velocities` at the
+    /// boundary elements (e.g. from a solution of `boundary_matrices`), without an incident field.
+    #[pyo3(name = "sample_field")]
+    pub fn sample_field_py<'py>(
+        &self,
+        py: Python<'py>,
+        orientation: Orientation,
+        k: Complex64,
+        phis: PyArrayLike1<'py, Complex<f64>, AllowTypeChange>,
+        velocities: PyArrayLike1<'py, Complex<f64>, AllowTypeChange>,
+        points: PyArrayLike2<'py, f64, AllowTypeChange>,
+    ) -> Bound<'py, PyArray1<Complex64>> {
+        let phis = phis.to_owned_array();
+        let velocities = velocities.to_owned_array();
+        let points = points.to_owned_array();
+        assert_eq!(phis.len(), self.len());
+        assert_eq!(points.shape()[1], 2);
+        let solution = BoundarySolution::new(
+            self.clone(),
+            orientation,
+            BoundaryCondition::new(self.len()),
+            k,
+            1.0,
+            phis,
+            velocities,
+        );
+        let incident = Array1::<Complex64>::zeros(points.shape()[0]);
+        self.solve_samples(&solution, incident, points, orientation)
+            .to_pyarray(py)
+    }
 }
 
 impl Solver {
